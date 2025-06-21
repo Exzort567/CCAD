@@ -1,0 +1,148 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { ChevronDown, Menu, X } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+
+const programLinks = [
+  { label: 'Artistic Development Programs - 7 Forms of Art', href: '#' },
+  { label: 'Culture and Development Programs', href: '#' },
+  { label: 'Cultural Heritage Programs', href: '#' },
+  { label: 'Culture and Governance', href: '#' },
+];
+
+export function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Prevent background scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
+  return (
+    <nav className="relative bg-[#382716] h-[96px] flex items-center px-0 font-montserrat z-50">
+      {/* Left Logo */}
+      <div className="flex-shrink-0 pl-6">
+        <Image
+          src="/images/logo.jpg"
+          alt="Logo"
+          width={90}
+          height={90}
+          className="rounded-full"
+          priority
+        />
+      </div>
+
+      {/* Desktop Nav */}
+      <div className="hidden lg:flex flex-1 justify-end items-center relative pr-12">
+        <div className="flex items-center gap-[48px] text-white text-[1.2rem] font-medium">
+          <Link href="/" className="hover:text-gray-300 transition-colors">Home</Link>
+          {/* Program Dropdown */}
+          <div className="relative group">
+            <button
+              className="flex items-center hover:text-gray-300 transition-colors focus:outline-none"
+              aria-haspopup="true"
+              aria-expanded={false}
+              tabIndex={0}
+            >
+              <span>Program</span>
+              <ChevronDown className="w-6 h-6 ml-2" />
+            </button>
+            <div className="absolute left-0 mt-2 w-72 bg-white text-[#382716] rounded-lg shadow-lg py-2 z-50 transition-all duration-200 origin-top transform opacity-0 scale-95 -translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 group-hover:pointer-events-auto">
+              {programLinks.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="block px-6 py-3 hover:bg-[#f3e2bb] hover:text-[#382716] text-base text-left"
+                  tabIndex={0}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="">
+            <Image
+              src="/images/sandugo.png"
+              alt="Sandugo Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+              priority
+            />
+          </div>
+          <Link href="/creative-industry" className="hover:text-gray-300 transition-colors">Creative Industry</Link>
+          <Link href="/bach-council" className="hover:text-gray-300 transition-colors">Bach Council</Link>
+        </div>
+      </div>
+
+      {/* Mobile Hamburger */}
+      <div className="lg:hidden flex-1 flex justify-end pr-6">
+        <button
+          className="text-white focus:outline-none"
+          onClick={() => setMobileOpen((v) => !v)}
+          aria-label="Open menu"
+        >
+          {mobileOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+        </button>
+      </div>
+
+      {/* Mobile Dropdown Menu */}
+      {mobileOpen && (
+        <div className="absolute left-1/2 top-full -translate-x-1/2 w-[90vw] max-w-sm bg-[#382716] shadow-lg z-50 animate-dropdown flex flex-col items-center py-6 rounded-b-2xl border border-[#2c1c18]">
+          <Link href="/" className="text-white text-lg font-semibold py-2 w-full text-center hover:bg-[#4a2e2a]" onClick={() => setMobileOpen(false)}>Home</Link>
+          {/* Program Dropdown (always open on mobile) */}
+          <div className="w-full flex flex-col items-start">
+            <div className="flex items-center text-white text-lg font-semibold py-2 w-full pl-6">
+              <span>Program</span>
+              <span className="ml-2 block lg:hidden" />
+            </div>
+            <div className="w-full">
+              <div className="bg-white rounded-lg shadow-md ml-3 mt-1 mb-3 py-2 w-[calc(100%-1.5rem)]">
+                {programLinks.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="block text-[#382716] text-base py-2 pl-6 pr-4 text-left hover:bg-[#f3e2bb] rounded"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+          {/* Sandugo logo after Program */}
+          <div className="my-4">
+            <Image
+              src="/images/sandugo.png"
+              alt="Sandugo Logo"
+              width={120}
+              height={40}
+              className="object-contain"
+              priority
+            />
+          </div>
+          <Link href="/creative-industry" className="text-white text-lg font-semibold py-2 w-full text-center hover:bg-[#4a2e2a]" onClick={() => setMobileOpen(false)}>Creative Industry</Link>
+          <Link href="/bach-council" className="text-white text-lg font-semibold py-2 w-full text-center hover:bg-[#4a2e2a]" onClick={() => setMobileOpen(false)}>Bach Council</Link>
+        </div>
+      )}
+    </nav>
+  );
+}
+
+// Add dropdown animation
+// In your global CSS (e.g., globals.css), add:
+// @keyframes dropdown {
+//   0% { opacity: 0; transform: translateY(-16px); }
+//   100% { opacity: 1; transform: translateY(0); }
+// }
+// .animate-dropdown { animation: dropdown 0.25s ease; } 
