@@ -4,11 +4,14 @@ import Image from "next/image";
 import { Eye, Rocket } from 'lucide-react';
 import { useState, useRef, useLayoutEffect } from 'react';
 import ObjectivesSection from "../components/ObjectivesSection";
+import NewsCarousel from "../components/NewsCarousel";
+import EventCard from "../components/EventCard";
+import type { FC } from 'react';
 
 export default function Home() {
   return (
     <div className="w-full">
-      <section className="relative h-[600px] w-full">
+      <section className="relative h-[160px] md:h-[600px] w-full bg-[#0052a4]">
         <Image
           src="/images/banner.jpg"
           alt="Philippine Independence Day"
@@ -21,10 +24,10 @@ export default function Home() {
       <section className="py-20 bg-[#FFFFFF]">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-[#4a2e2a] mb-8">VISION & MISSION</h2>
-          <p className="max-w-4xl mx-auto text-[#4a2e2a] mb-16 text-lg">
-            The Center for Culture and Arts Development – Bohol (CCAD) envisions a dynamic and inclusive cultural landscape that celebrates Boholano identity, creativity, and heritage. Guided by a clear mission, CCAD is committed to preserving, promoting, and developing the arts and culture of Bohol through sustainable programs, education, and community engagement.
+          <p className="max-w-4xl mx-auto text-[#000000] mb-16 text-lg">
+            The <span className="text-[#4a2e2a] font-bold">Center for Culture and Arts Development – Bohol (CCAD)</span> envisions a dynamic and inclusive cultural landscape that celebrates Boholano identity, creativity, and heritage. Guided by a clear mission, CCAD is committed to preserving, promoting, and developing the arts and culture of Bohol through sustainable programs, education, and community engagement.
           </p>
-          <div className="grid md:grid-cols-2 gap-50 max-w-7xl mx-auto items-start relative">
+          <div className="grid md:grid-cols-2 gap-y-12 md:gap-x-16 max-w-7xl mx-auto items-start relative">
             {/* Vision */}
             <div className="flex flex-col items-center">
               <div className="p-6 mb-4">
@@ -55,8 +58,8 @@ export default function Home() {
       <section className="flex justify-center bg-white py-10 w-full">
         <div className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center">
           <div className="w-full flex flex-col md:flex-row justify-center items-start gap-12 md:gap-10">
-            {/* Logo */}
-            <div className="flex-shrink-0 flex flex-col justify-center items-center w-[340px] h-full">
+            {/* Logo - Hide on mobile */}
+            <div className="hidden md:flex flex-shrink-0 flex-col justify-center items-center w-[340px] h-full">
               <Image src="/images/ccadSquare.png" alt="CCAD Logo" width={320} height={320} className="mx-auto" />
             </div>
 
@@ -85,6 +88,41 @@ export default function Home() {
             {/* Objectives with Dropdown */}
             <div className="flex-1 flex flex-col items-center md:items-start w-full max-w-md mx-auto">
               <ObjectivesSection />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* News & Events Section */}
+      <section className="w-full flex justify-center bg-white py-16">
+        <div className="w-full max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-[1.8fr_1.2fr] gap-x-12 gap-y-16 items-start">
+          {/* News */}
+          <div className="flex flex-col items-center md:items-start">
+            <h2 className="text-4xl font-semibold text-[#382716] mb-8 border-b-4 border-[#382716] pb-2">News</h2>
+            <NewsCarousel />
+          </div>
+          {/* Events */}
+          <div className="flex flex-col items-center md:items-start">
+            <h2 className="text-4xl font-semibold text-[#382716] mb-8 border-b-4 border-[#382716] pb-2">Events</h2>
+            <div className="flex flex-col gap-5 w-full max-w-sm md:max-w-full">
+              <EventCard
+                image="/images/harana.jpg"
+                title="Harana Serenade Contest"
+                date="June 21, 2025"
+                description="A modern serenade contest titled 'Harana' will be held on June 21, 2025, at Bantawan Food Park, Old Airport..."
+              />
+              <EventCard
+                image="/images/pabuhay.jpg"
+                title="Pabuhagay Dos LGBTQ+ Art Exhibit Opening"
+                date="June 21, 2025"
+                description="The opening of the Pabuhagay Dos: Habi sa Kagawasan LGBTQ+ Art Exhibit takes place on June 16, 2025..."
+              />
+              <EventCard
+                image="/images/kapanulundan.jpg"
+                title="KapanuLunDan Visual Art Exhibit"
+                date="June 21, 2025"
+                description="In celebration of National Heritage Month, the Provincial Government of Bohol, presents 'KapanuLunDan'..."
+              />
             </div>
           </div>
         </div>

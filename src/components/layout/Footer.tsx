@@ -63,7 +63,7 @@ export function Footer() {
 
           {/* Map */}
           <div className="flex justify-end w-full">
-            <div className="w-full max-w-[600px] h-[300px] rounded-lg overflow-hidden border border-[#f3e2bb]">
+            <div className="w-full max-w-[600px] h-[300px] rounded-sm overflow-hidden">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4640.011803967226!2d123.85698241127407!3d9.65923619038956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33aa4db095629def%3A0xa8d531c9130bc8c4!2sBohol%20Provincial%20Capitol!5e1!3m2!1sen!2sph!4v1750476225273!5m2!1sen!2sph"
                 width="600"

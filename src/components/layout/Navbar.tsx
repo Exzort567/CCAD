@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const programLinks = [
-  { label: 'Artistic Development Programs - 7 Forms of Art', href: '#' },
+  { label: 'Artistic Development Programs - 7 Forms of Art', href: '/artistic-development' },
   { label: 'Culture and Development Programs', href: '#' },
   { label: 'Cultural Heritage Programs', href: '#' },
   { label: 'Culture and Governance', href: '#' },
@@ -14,6 +14,8 @@ const programLinks = [
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isProgramDropdownOpen, setProgramDropdownOpen] = useState(false);
+  const programTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Prevent background scroll when mobile menu is open
   useEffect(() => {
@@ -26,6 +28,19 @@ export function Navbar() {
       document.body.style.overflow = '';
     };
   }, [mobileOpen]);
+
+  const handleProgramMouseEnter = () => {
+    if (programTimeoutRef.current) {
+      clearTimeout(programTimeoutRef.current);
+    }
+    setProgramDropdownOpen(true);
+  };
+
+  const handleProgramMouseLeave = () => {
+    programTimeoutRef.current = setTimeout(() => {
+      setProgramDropdownOpen(false);
+    }, 200); // 200ms delay
+  };
 
   return (
     <nav className="relative bg-[#382716] h-[96px] flex items-center px-0 font-montserrat z-50">
@@ -46,23 +61,34 @@ export function Navbar() {
         <div className="flex items-center gap-[48px] text-white text-[1.2rem] font-medium">
           <Link href="/" className="hover:text-gray-300 transition-colors">Home</Link>
           {/* Program Dropdown */}
-          <div className="relative group">
+          <div
+            className="relative"
+            onMouseEnter={handleProgramMouseEnter}
+            onMouseLeave={handleProgramMouseLeave}
+          >
             <button
               className="flex items-center hover:text-gray-300 transition-colors focus:outline-none"
               aria-haspopup="true"
-              aria-expanded={false}
+              aria-expanded={isProgramDropdownOpen}
               tabIndex={0}
             >
               <span>Program</span>
               <ChevronDown className="w-6 h-6 ml-2" />
             </button>
-            <div className="absolute left-0 mt-2 w-72 bg-white text-[#382716] rounded-lg shadow-lg py-2 z-50 transition-all duration-200 origin-top transform opacity-0 scale-95 -translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 group-hover:pointer-events-auto">
+            <div
+              className={`absolute left-0 mt-2 w-72 bg-white text-[#382716] rounded-lg shadow-lg py-2 z-50 transition-all duration-200 origin-top transform ${
+                isProgramDropdownOpen
+                  ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+                  : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+              }`}
+            >
               {programLinks.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
                   className="block px-6 py-3 hover:bg-[#f3e2bb] hover:text-[#382716] text-base text-left"
                   tabIndex={0}
+                  onClick={() => setProgramDropdownOpen(false)}
                 >
                   {item.label}
                 </Link>
