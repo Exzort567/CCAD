@@ -14,7 +14,7 @@ export default function Home() {
         />
       </section>
 
-      <section className="py-20 bg-[#f3e2bb]">
+      <section className="py-20 bg-[#FFFFFF]">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-[#4a2e2a] mb-8">VISION & MISSION</h2>
           <p className="max-w-4xl mx-auto text-[#4a2e2a] mb-16 text-lg">

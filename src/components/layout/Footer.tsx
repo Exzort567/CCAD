@@ -1,4 +1,3 @@
-import { MapPin, Mail, Phone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -11,25 +10,27 @@ export function Footer() {
     'Supreme Court',
     'Court of Appeals',
     'Sandiganbayan',
-    'Gov.PH',
+    'GOV.PH',
     'Open Data Portal',
     'Official Gazette',
   ];
 
   const partnerLogos = [
-    { src: '/images/logo1.jpg', alt: 'Province of Bohol' },
-    { src: '/images/logo2.jpg', alt: 'BACA' },
-    { src: '/images/logo3.jpg', alt: 'Bohol Island Geopark' },
-    { src: '/images/logo4.jpg', alt: 'UNESCO' },
+    { src: '/images/logo1.png', alt: 'Province of Bohol' },
+    { src: '/images/logo2.png', alt: 'BACA' },
+    { src: '/images/logo3.png', alt: 'Bohol Island Geopark' },
+    { src: '/images/logo4.png', alt: 'UNESCO' },
   ];
 
   return (
-    <footer className="bg-[#4a2e2a] text-white">
-      <div className="container mx-auto px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-1">
-            <h3 className="text-xl font-bold mb-4">GOVERNMENT LINKS:</h3>
-            <ul className="space-y-2">
+    <footer className="font-sans">
+      {/* Main Section */}
+      <div className="bg-[#3c2a18] text-[#f3e2bb] w-full">
+        <div className="max-w-[1400px] mx-auto px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* Government Links */}
+          <div>
+            <h3 className="text-2xl font-bold uppercase tracking-wide mb-4">Government Links:</h3>
+            <ul className="space-y-1 text-lg">
               {governmentLinks.map((link) => (
                 <li key={link}>
                   <Link href="#" className="hover:underline">
@@ -40,54 +41,57 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">CONTACT US</h3>
-              <p className="font-semibold">Center for Culture and Arts Development - Bohol</p>
-              <div className="mt-4 space-y-3">
-                <div className="flex items-start">
-                  <MapPin className="w-5 h-5 mt-1 mr-3 flex-shrink-0" />
-                  <span>2nd Floor, New Capitol Building, Gov. Lino I. Chatto Drive, Barangay Cogon, Tagbilaran City, Bohol, 6300 Philippines</span>
-                </div>
-                <div className="flex items-center">
-                  <Mail className="w-5 h-5 mr-3 flex-shrink-0" />
-                  <a href="mailto:ccad.bohol@gmail.com" className="hover:underline">
-                    ccad.bohol@gmail.com
-                  </a>
-                </div>
-                <div className="flex items-center">
-                  <Phone className="w-5 h-5 mr-3 flex-shrink-0" />
-                  <span>(555) 555-0199</span>
-                </div>
-              </div>
+          {/* Contact Us */}
+          <div className="md:col-span-1 flex flex-col items-start">
+            <h3 className="text-2xl font-bold uppercase tracking-wide mb-4">Contact Us</h3>
+            <div className="font-bold text-lg mb-2 leading-tight">Center for Culture and Arts<br />Development - Bohol</div>
+            <div className="mb-2 text-lg leading-snug flex items-start gap-2">
+              <Image className='mt-1' src="/images/loc.png" alt="Logo" width={30} height={30} />
+              2nd Floor, New Capitol Building,<br />
+              Gov. Lino I. Chatto Drive, Barangay Cogon,<br />
+              Tagbilaran City, Bohol, 6300 Philippines
             </div>
-            <div>
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4640.011803967226!2d123.85698241127407!3d9.65923619038956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33aa4db095629def%3A0xa8d531c9130bc8c4!2sBohol%20Provincial%20Capitol!5e1!3m2!1sen!2sph!4v1750476225273!5m2!1sen!2sph" 
-                width="400" 
-                height="250" 
-                style={{ border: 0 }} 
-                allowFullScreen="" 
-                loading="lazy" 
+            <div className="mb-2 flex items-start gap-2 text-lg leading-snug">
+              <Image src="/images/mail.png" alt="Logo" width={30} height={30} />
+              <Link href="mailto:ccad.bohol@gmail.com" className="underline">ccad.bohol@gmail.com</Link>
+            </div>
+            <div className="text-lg flex items-start gap-2">
+              <Image src="/images/call.svg" alt="Logo" width={30} height={30} />
+              <div>(555) 555-0199</div>
+            </div>
+          </div>
+
+          {/* Map */}
+          <div className="flex justify-end w-full">
+            <div className="w-full max-w-[600px] h-[300px] rounded-lg overflow-hidden border border-[#f3e2bb]">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4640.011803967226!2d123.85698241127407!3d9.65923619038956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33aa4db095629def%3A0xa8d531c9130bc8c4!2sBohol%20Provincial%20Capitol!5e1!3m2!1sen!2sph!4v1750476225273!5m2!1sen!2sph"
+                width="600"
+                height="450"
+                style={{ border: 0, width: '100%', height: '100%' }}
+                allowFullScreen
+                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                className="w-full h-auto rounded-lg"
+                className="w-full h-full"
               />
             </div>
           </div>
         </div>
       </div>
-      
-      <div className="bg-[#3b2521]">
-        <div className="container mx-auto px-8 py-6 flex flex-wrap items-center justify-center gap-8">
+
+      {/* Partner Logos Row */}
+      <div className="bg-[#f3e2bb] py-6">
+        <div className="max-w-[1100px] mx-auto flex flex-wrap items-center justify-center gap-16">
           {partnerLogos.map((logo, index) => (
-            <Image key={index} src={logo.src} alt={logo.alt} width={logo.alt === 'BACA' || logo.alt === 'UNESCO' ? 100 : 80} height={logo.alt === 'BACA' ? 40 : (logo.alt === 'UNESCO' ? 50 : 80)} />
+            <Image key={index} src={logo.src} alt={logo.alt} width={logo.alt === 'BACA' || logo.alt === 'UNESCO' ? 120 : 90} height={logo.alt === 'BACA' ? 48 : (logo.alt === 'UNESCO' ? 60 : 90)} />
           ))}
         </div>
       </div>
 
+      {/* Bottom Bar */}
       <div className="bg-[#2c1c18]">
-        <div className="container mx-auto px-8 py-4 flex justify-between items-center">
-          <p className="text-sm">©2025 Center for Culture and Arts Development – Bohol. All rights reserved.</p>
+        <div className="max-w-[1400px] mx-auto px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-2">
+          <p className="text-lg text-white tracking-wide">©2025 Center for Culture and Arts Development – Bohol. All rights reserved.</p>
           <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
             <svg
               width={40}
