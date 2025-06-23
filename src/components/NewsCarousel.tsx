@@ -1,51 +1,52 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { CiClock2 } from "react-icons/ci";
 import { useMediaQuery } from '../hooks/useMediaQuery';
 
-const news = [
-  {
-    image: '/images/kulturo.jpg',
-    title: 'Kulturo Dos: A Culture-based Lesson Exemplar Competition',
-    date: 'July 20, 2025',
-    description: 'The Center for Culture and Arts Development (CCAD) and the Bohol Arts and Cultural Heritage (BACH) Council–Committee on Culture and Education, in cooperation with SAKDAP–Bohol, present Kulturo.....',
-  },
-  {
-    image: '/images/stencil.jpg',
-    title: 'Pabuhagay Dos: Pride Month Celebration Announcement',
-    date: 'June 9, 2025',
-    description: 'The Provincial Government of Bohol and partners announce Pabuhagay Dos, a Pride Month event featuring an art exhibit and workshops for the LGBTQ+ community. Activities include stencil printmaking and....',
-  },
-  {
-    image: '/images/stencil.jpg',
-    title: 'Stencil Printmaking & Tie Dyeing',
-    date: 'June 15, 2025',
-    description: 'Join our workshop participants for a creative session on stencil printmaking and tie dyeing. Open to all interested artists and hobbyists!',
-  },
-  {
-    image: '/images/kulturo.jpg',
-    title: 'Kulturo Dos: A Culture-based Lesson Exemplar Competition',
-    date: 'July 20, 2025',
-    description: 'The Center for Culture and Arts Development (CCAD) and the Bohol Arts and Cultural Heritage (BACH) Council–Committee on Culture and Education, in cooperation with SAKDAP–Bohol, present Kulturo.....',
-  },
-];
+interface NewsItem {
+  _id?: string;
+  image: string;
+  title: string;
+  date: string;
+  description: string;
+}
 
 function NewsCarousel() {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
+  useEffect(() => {
+    setLoading(true);
+    fetch('/api/news')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch news');
+        return res.json();
+      })
+      .then(data => {
+        setNews(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
   const itemsPerSlide = isDesktop ? 2 : 1;
-  
+
   const slides = useMemo(() => {
     const result = [];
     for (let i = 0; i < news.length; i += itemsPerSlide) {
       result.push(news.slice(i, i + itemsPerSlide));
     }
     return result;
-  }, [itemsPerSlide]);
+  }, [itemsPerSlide, news]);
 
   const canPrev = index > 0;
   const canNext = index < slides.length - 1;
@@ -57,6 +58,10 @@ function NewsCarousel() {
   const handleNext = () => {
     if (canNext) setIndex(index + 1);
   };
+
+  if (loading) return <div className="text-center py-8">Loading news...</div>;
+  if (error) return <div className="text-center text-red-600 py-8">{error}</div>;
+  if (!news.length) return <div className="text-center py-8">No news available.</div>;
 
   return (
     <div className="relative w-full max-w-sm md:max-w-none">
@@ -72,7 +77,7 @@ function NewsCarousel() {
             <div key={slideIndex} className="w-full flex-shrink-0" style={{ width: `${100 / slides.length}%` }}>
               <div className="flex items-stretch justify-center gap-8 px-4">
                 {slideItems.map((item, itemIndex) => (
-                  <div key={itemIndex} className="bg-[#fcfaf5] h-[500px] shadow-md flex-1 flex flex-col overflow-hidden">
+                  <div key={item._id || itemIndex} className="bg-[#fcfaf5] h-[500px] shadow-md flex-1 flex flex-col overflow-hidden">
                     <div className="relative w-full h-[200px]">
                       <Image src={item.image} alt={item.title} layout="fill" className="object-cover" />
                     </div>

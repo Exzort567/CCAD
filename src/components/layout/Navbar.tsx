@@ -9,11 +9,22 @@ const programLinks = [
   { label: 'Artistic Development Programs - 7 Forms of Art', href: '/artistic-development' },
   { label: 'Culture and Development Programs', href: '#' },
   { label: 'Cultural Heritage Programs', href: '#' },
+  { label: 'Creative Industry', href: '#' },
   { label: 'Culture and Governance', href: '#' },
+];
+
+
+const aboutUsLinks = [
+  { label: 'Vision and Mission', href: '#' },
+  { label: 'History', href: '#' },
+  { label: 'Mandates and Objectives', href: '#' },
+  { label: 'What is CCAD?', href: '#' },
 ];
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isAboutUsDropdownOpen, setAboutUsDropdownOpen] = useState(false);
+  const aboutUsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isProgramDropdownOpen, setProgramDropdownOpen] = useState(false);
   const programTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -42,6 +53,19 @@ export function Navbar() {
     }, 200); // 200ms delay
   };
 
+  const handleAboutUsMouseEnter = () => {
+    if (aboutUsTimeoutRef.current) {
+      clearTimeout(aboutUsTimeoutRef.current);
+    }
+    setAboutUsDropdownOpen(true);
+  };
+
+  const handleAboutUsMouseLeave = () => {
+    aboutUsTimeoutRef.current = setTimeout(() => {
+      setAboutUsDropdownOpen(false);
+    }, 200); // 200ms delays
+  };
+
   return (
     <nav className="relative bg-[#382716] h-[96px] flex items-center px-0 font-montserrat z-50">
       {/* Left Logo */}
@@ -60,6 +84,41 @@ export function Navbar() {
       <div className="hidden lg:flex flex-1 justify-end items-center relative pr-12">
         <div className="flex items-center gap-[48px] text-white text-[1.2rem] font-medium">
           <Link href="/" className="hover:text-gray-300 transition-colors">Home</Link>
+          {/* About us DROPDOWN */}
+          <div
+            className="relative"
+            onMouseEnter={handleAboutUsMouseEnter}
+            onMouseLeave={handleAboutUsMouseLeave}
+          >
+            <button
+              className="flex items-center hover:text-gray-300 transition-colors focus:outline-none"
+              aria-haspopup="true"
+              aria-expanded={isAboutUsDropdownOpen}
+              tabIndex={0}
+            >
+              <span>About Us</span>
+              <ChevronDown className="w-6 h-6 ml-2" />
+            </button>
+            <div
+              className={`absolute left-0 mt-2 w-72 bg-white text-[#382716] rounded-lg shadow-lg py-2 z-50 transition-all duration-200 origin-top transform ${
+                isAboutUsDropdownOpen
+                  ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+                  : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+              }`}
+            >
+              {aboutUsLinks.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="block px-6 py-3 hover:bg-[#f3e2bb] hover:text-[#382716] text-base text-left"
+                  tabIndex={0}
+                  onClick={() => setAboutUsDropdownOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
           {/* Program Dropdown */}
           <div
             className="relative"
@@ -105,7 +164,6 @@ export function Navbar() {
               priority
             />
           </div>
-          <Link href="/creative-industry" className="hover:text-gray-300 transition-colors">Creative Industry</Link>
           <Link href="/bach-council" className="hover:text-gray-300 transition-colors">Bach Council</Link>
         </div>
       </div>

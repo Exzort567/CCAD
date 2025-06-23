@@ -2,13 +2,35 @@
 
 import Image from "next/image";
 import { Eye, Rocket } from 'lucide-react';
-import { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import ObjectivesSection from "../components/ObjectivesSection";
 import NewsCarousel from "../components/NewsCarousel";
 import EventCard from "../components/EventCard";
 import type { FC } from 'react';
 
 export default function Home() {
+  // Add state for events
+  const [events, setEvents] = useState<any[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsError, setEventsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setEventsLoading(true);
+    fetch('/api/events')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch events');
+        return res.json();
+      })
+      .then(data => {
+        setEvents(data);
+        setEventsLoading(false);
+      })
+      .catch(err => {
+        setEventsError(err.message);
+        setEventsLoading(false);
+      });
+  }, []);
+
   return (
     <div className="w-full">
       <section className="relative h-[160px] md:h-[600px] w-full bg-[#0052a4]">
@@ -105,24 +127,20 @@ export default function Home() {
           <div className="flex flex-col items-center md:items-start">
             <h2 className="text-4xl font-semibold text-[#382716] mb-8 border-b-4 border-[#382716] pb-2">Events</h2>
             <div className="flex flex-col gap-5 w-full max-w-sm md:max-w-full">
-              <EventCard
-                image="/images/harana.jpg"
-                title="Harana Serenade Contest"
-                date="June 21, 2025"
-                description="A modern serenade contest titled 'Harana' will be held on June 21, 2025, at Bantawan Food Park, Old Airport..."
-              />
-              <EventCard
-                image="/images/pabuhay.jpg"
-                title="Pabuhagay Dos LGBTQ+ Art Exhibit Opening"
-                date="June 21, 2025"
-                description="The opening of the Pabuhagay Dos: Habi sa Kagawasan LGBTQ+ Art Exhibit takes place on June 16, 2025..."
-              />
-              <EventCard
-                image="/images/kapanulundan.jpg"
-                title="KapanuLunDan Visual Art Exhibit"
-                date="June 21, 2025"
-                description="In celebration of National Heritage Month, the Provincial Government of Bohol, presents 'KapanuLunDan'..."
-              />
+              {eventsLoading && <div className="text-center py-8">Loading events...</div>}
+              {eventsError && <div className="text-center text-red-600 py-8">{eventsError}</div>}
+              {!eventsLoading && !eventsError && events.length === 0 && (
+                <div className="text-center py-8">No events available.</div>
+              )}
+              {!eventsLoading && !eventsError && events.map(event => (
+                <EventCard
+                  key={event._id || event.title}
+                  image={event.image}
+                  title={event.title}
+                  date={event.date}
+                  description={event.description}
+                />
+              ))}
             </div>
           </div>
         </div>
