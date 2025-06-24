@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { cultureAndDevelopmentPrograms } from '../../data/programs';
+import { culturalHeritagePrograms } from '../../data/programs';
 
 const DevelopmentProgramsPage = () => {
   const [selectedYear, setSelectedYear] = useState<'2024' | '2023'>('2024');
@@ -12,8 +12,8 @@ const DevelopmentProgramsPage = () => {
     setSelectedYear(year as '2024' | '2023');
   };
 
-  const years = Object.keys(cultureAndDevelopmentPrograms).sort((a, b) => Number(b) - Number(a));
-  const events = cultureAndDevelopmentPrograms[selectedYear] || [];
+  const years = Object.keys(culturalHeritagePrograms).sort((a, b) => Number(b) - Number(a));
+  const events = culturalHeritagePrograms[selectedYear] || [];
 
   return (
     <div className="w-full bg-white text-[#382716]">
@@ -38,7 +38,7 @@ const DevelopmentProgramsPage = () => {
 
         <div className="text-center my-12">
           <div className="inline-block bg-[#c4a46a] text-white font-semibold px-8 py-4 shadow-md text-xl">
-            Culture and Development Programs
+            Culture Heritage Programs
           </div>
         </div>
 
@@ -62,7 +62,7 @@ const DevelopmentProgramsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
             {events.length > 0 ? (
               events.map((event: any) => (
-                <Link key={event.slug} href={`/development-programs/${event.slug}`} passHref>
+                <Link key={event.slug} href={`/heritage-programs/${event.slug}`} passHref>
                   <div className="block bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer">
                     <div className="relative w-full h-56">
                       <Image

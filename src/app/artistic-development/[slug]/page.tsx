@@ -1,25 +1,101 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { artisticDevelopmentPrograms } from '../../../data/programs';
 import { ArrowLeft } from 'lucide-react';
 
+interface Program {
+  slug: string;
+  title: string;
+  date: string;
+  description: string;
+  images: string[];
+  dateStart?: string;
+  dateEnd?: string;
+}
+
+const formatDateRange = (start: string, end: string | null) => {
+  if (!end) return new Date(start).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const startMonth = startDate.toLocaleString('default', { month: 'long' });
+  const endMonth = endDate.toLocaleString('default', { month: 'long' });
+
+  if (startMonth === endMonth && startDate.getFullYear() === endDate.getFullYear()) {
+    if (startDate.getDate() === endDate.getDate()) {
+      return `${startMonth} ${startDate.getDate()}, ${startDate.getFullYear()}`;
+    }
+    return `${startMonth} ${startDate.getDate()}-${endDate.getDate()}, ${startDate.getFullYear()}`;
+  }
+  return `${startMonth} ${startDate.getDate()}, ${startDate.getFullYear()} - ${endMonth} ${endDate.getDate()}, ${endDate.getFullYear()}`;
+};
+
 const ProgramDetailPage = () => {
   const router = useRouter();
   const params = useParams();
   const { slug } = params;
 
-  // Find the event data based on the slug from the URL
-  const event = Object.values(artisticDevelopmentPrograms).flat().find(e => e.slug === slug);
+  const [event, setEvent] = useState<Program | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Show a "not found" message if the event doesn't exist
-  if (!event) {
+  useEffect(() => {
+    if (!slug) return;
+
+    const findEvent = async () => {
+      setLoading(true);
+      setError(null);
+
+      // 1. Search in static data first
+      const staticEvent = Object.values(artisticDevelopmentPrograms)
+        .flat()
+        .find(e => e.slug === slug);
+      
+      if (staticEvent) {
+        setEvent(staticEvent);
+        setLoading(false);
+        return;
+      }
+
+      // 2. If not found, fetch from the API
+      try {
+        const response = await fetch(`/api/programs?slug=${slug}`);
+        if (!response.ok) {
+          throw new Error('Event not found from API.');
+        }
+        const dbEvent = await response.json();
+        const formattedEvent = {
+          ...dbEvent,
+          date: formatDateRange(dbEvent.dateStart, dbEvent.dateEnd),
+        };
+        setEvent(formattedEvent);
+      } catch (err) {
+        setError('The event you are looking for does not exist.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    findEvent();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <p>Loading event...</p>
+      </div>
+    );
+  }
+
+  if (error || !event) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold">Event not found</h1>
-        <p className="mt-2">The event you are looking for does not exist.</p>
+        <p className="mt-2">{error || 'The event you are looking for does not exist.'}</p>
         <Link href="/artistic-development" className="text-blue-500 hover:underline mt-6 inline-block">
           &larr; Back to programs
         </Link>

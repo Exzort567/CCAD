@@ -2,14 +2,13 @@
 
 import Image from "next/image";
 import { Eye, Rocket } from 'lucide-react';
-import { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ObjectivesSection from "../components/ObjectivesSection";
 import NewsCarousel from "../components/NewsCarousel";
 import EventCard from "../components/EventCard";
-import type { FC } from 'react';
+import { useSectionAnimation } from "@/hooks/useSectionAnimation";
 
 export default function Home() {
-  // Add state for events
   const [events, setEvents] = useState<any[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
@@ -31,9 +30,14 @@ export default function Home() {
       });
   }, []);
 
+  const section1Ref = useSectionAnimation();
+  const section2Ref = useSectionAnimation();
+  const section3Ref = useSectionAnimation();
+  const section4Ref = useSectionAnimation();
+
   return (
     <div className="w-full">
-      <section className="relative h-[160px] md:h-[600px] w-full bg-[#0052a4]">
+      <section ref={section1Ref} className="relative h-[160px] md:h-[600px] w-full bg-[#0052a4] animated-section slide-in-left">
         <Image
           src="/images/banner.jpg"
           alt="Philippine Independence Day"
@@ -43,7 +47,7 @@ export default function Home() {
         />
       </section>
 
-      <section className="py-20 bg-[#FFFFFF]">
+      <section ref={section2Ref} id="vision-mission" className="py-20 bg-[#FFFFFF] animated-section slide-in-right">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-[#4a2e2a] mb-8">VISION & MISSION</h2>
           <p className="max-w-4xl mx-auto text-[#000000] mb-16 text-lg">
@@ -77,7 +81,7 @@ export default function Home() {
       </section>
 
       {/* Mandates & Objectives Section */}
-      <section className="flex justify-center bg-white py-10 w-full">
+      <section ref={section3Ref} id="mandates-objectives" className="flex justify-center bg-white py-30 w-full animated-section slide-in-left">
         <div className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center">
           <div className="w-full flex flex-col md:flex-row justify-center items-start gap-12 md:gap-10">
             {/* Logo - Hide on mobile */}
@@ -116,7 +120,7 @@ export default function Home() {
       </section>
 
       {/* News & Events Section */}
-      <section className="w-full flex justify-center bg-white py-16">
+      <section ref={section4Ref} className="w-full flex justify-center bg-white py-16 animated-section slide-in-right">
         <div className="w-full max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-[1.8fr_1.2fr] gap-x-12 gap-y-16 items-start">
           {/* News */}
           <div className="flex flex-col items-center md:items-start">

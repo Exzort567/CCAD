@@ -8,16 +8,16 @@ import Link from 'next/link';
 const programLinks = [
   { label: 'Artistic Development Programs - 7 Forms of Art', href: '/artistic-development' },
   { label: 'Culture and Development Programs', href: '/development-programs' },
-  { label: 'Cultural Heritage Programs', href: '#' },
-  { label: 'Creative Industry', href: '#' },
-  { label: 'Culture and Governance', href: '#' },
+  { label: 'Cultural Heritage Programs', href: '/heritage-programs' },
+  { label: 'Creative Industry', href: '/creative-industry' },
+  { label: 'Culture and Governance', href: '/culture-governance' },
 ];
 
 
 const aboutUsLinks = [
-  { label: 'Vision and Mission', href: '#' },
   { label: 'History', href: '#' },
-  { label: 'Mandates and Objectives', href: '#' },
+  { label: 'Vision and Mission', href: '/#vision-mission' },
+  { label: 'Mandates and Objectives', href: '/#mandates-objectives' },
   { label: 'What is CCAD?', href: '#' },
 ];
 
@@ -67,14 +67,14 @@ export function Navbar() {
   };
 
   return (
-    <nav className="relative bg-[#382716] h-[96px] flex items-center px-0 font-montserrat z-50">
+    <nav className="sticky top-0 w-full bg-[#382716] h-[96px] flex items-center px-0 font-montserrat z-50">
       {/* Left Logo */}
       <div className="flex-shrink-0 pl-6">
         <Image
           src="/images/logo.jpg"
           alt="Logo"
-          width={90}
-          height={90}
+          width={70}
+          height={70}
           className="rounded-full"
           priority
         />

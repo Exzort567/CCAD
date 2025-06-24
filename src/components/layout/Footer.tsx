@@ -57,7 +57,7 @@ export function Footer() {
             </div>
             <div className="text-base flex items-start gap-2">
               <Image src="/images/call.svg" alt="Logo" width={30} height={30} />
-              <div>(555) 555-0199</div>
+              <div>(038) 411-0138 loc 42009</div>
             </div>
           </div>
 
