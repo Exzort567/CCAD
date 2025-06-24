@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { artisticDevelopmentPrograms } from '../../../data/programs';
+import { cultureAndDevelopmentPrograms } from '../../../data/programs';
 import { ArrowLeft } from 'lucide-react';
 
 const ProgramDetailPage = () => {
@@ -12,7 +12,7 @@ const ProgramDetailPage = () => {
   const { slug } = params;
 
   // Find the event data based on the slug from the URL
-  const event = Object.values(artisticDevelopmentPrograms).flat().find(e => e.slug === slug);
+  const event = Object.values(cultureAndDevelopmentPrograms).flat().find(e => e.slug === slug);
 
   // Show a "not found" message if the event doesn't exist
   if (!event) {
@@ -20,7 +20,7 @@ const ProgramDetailPage = () => {
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold">Event not found</h1>
         <p className="mt-2">The event you are looking for does not exist.</p>
-        <Link href="/artistic-development" className="text-blue-500 hover:underline mt-6 inline-block">
+        <Link href="/development-programs" className="text-blue-500 hover:underline mt-6 inline-block">
           &larr; Back to programs
         </Link>
       </div>
@@ -40,8 +40,8 @@ const ProgramDetailPage = () => {
         </header>
 
         <div className="text-center mb-10">
-          <Link href="/artistic-development" className="inline-block bg-[#c4a46a] text-white font-semibold rounded-lg px-8 py-3 shadow-md text-lg hover:bg-opacity-90 transition-opacity">
-            Artistic Development Programs – 7 Forms of Art
+          <Link href="/development-programs" className="inline-block bg-[#c4a46a] text-white font-semibold rounded-lg px-8 py-3 shadow-md text-lg hover:bg-opacity-90 transition-opacity">
+             Culture and Development Programs
           </Link>
         </div>
 

@@ -43,19 +43,19 @@ export function Footer() {
 
           {/* Contact Us */}
           <div className="md:col-span-1 flex flex-col items-start">
-            <h3 className="text-2xl font-bold uppercase tracking-wide mb-4">Contact Us</h3>
+            <h3 className="text-xl font-bold uppercase tracking-wide mb-4">Contact Us</h3>
             <div className="font-bold text-lg mb-2 leading-tight">Center for Culture and Arts<br />Development - Bohol</div>
-            <div className="mb-2 text-lg leading-snug flex items-start gap-2">
+            <div className="mb-2 text-base leading-snug flex items-start gap-2">
               <Image className='mt-1' src="/images/loc.png" alt="Logo" width={30} height={30} />
               2nd Floor, New Capitol Building,<br />
               Gov. Lino I. Chatto Drive, Barangay Cogon,<br />
               Tagbilaran City, Bohol, 6300 Philippines
             </div>
-            <div className="mb-2 flex items-start gap-2 text-lg leading-snug">
+            <div className="mb-2 flex items-start gap-2 text-base leading-snug">
               <Image src="/images/mail.png" alt="Logo" width={30} height={30} />
               <Link href="mailto:ccad.bohol@gmail.com" className="underline">ccad.bohol@gmail.com</Link>
             </div>
-            <div className="text-lg flex items-start gap-2">
+            <div className="text-base flex items-start gap-2">
               <Image src="/images/call.svg" alt="Logo" width={30} height={30} />
               <div>(555) 555-0199</div>
             </div>

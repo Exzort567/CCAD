@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 const programLinks = [
   { label: 'Artistic Development Programs - 7 Forms of Art', href: '/artistic-development' },
-  { label: 'Culture and Development Programs', href: '#' },
+  { label: 'Culture and Development Programs', href: '/development-programs' },
   { label: 'Cultural Heritage Programs', href: '#' },
   { label: 'Creative Industry', href: '#' },
   { label: 'Culture and Governance', href: '#' },
@@ -154,7 +154,12 @@ export function Navbar() {
               ))}
             </div>
           </div>
-          <div className="">
+          <a 
+            href="https://sandugo.bohol.gov.ph/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:opacity-80 transition-opacity"
+          >
             <Image
               src="/images/sandugo.png"
               alt="Sandugo Logo"
@@ -163,7 +168,7 @@ export function Navbar() {
               className="object-contain"
               priority
             />
-          </div>
+          </a>
           <Link href="/bach-council" className="hover:text-gray-300 transition-colors">Bach Council</Link>
         </div>
       </div>
