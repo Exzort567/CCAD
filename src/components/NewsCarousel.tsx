@@ -77,17 +77,17 @@ function NewsCarousel() {
             <div key={slideIndex} className="w-full flex-shrink-0" style={{ width: `${100 / slides.length}%` }}>
               <div className="flex items-stretch justify-center gap-8 px-4">
                 {slideItems.map((item, itemIndex) => (
-                  <div key={item._id || itemIndex} className="bg-[#fcfaf5] h-[500px] shadow-md flex-1 flex flex-col overflow-hidden">
-                    <div className="relative w-full h-[200px]">
+                  <div key={item._id || itemIndex} className="bg-[#fcfaf5] h-[500px] shadow-md flex-1 flex flex-col overflow-hidden rounded-lg">
+                    <div className="relative w-full h-[250px]">
                       <Image src={item.image} alt={item.title} layout="fill" className="object-cover" />
                     </div>
-                    <div className="p-6 flex flex-col flex-grow">
-                      <h3 className="text-base font-semibold text-[#382716] px-3 mb-3 leading-tight">{item.title}</h3>
-                      <div className="flex items-center gap-2 text-[#382716] text-xs mb-3">
+                    <div className="p-4 flex flex-col flex-grow">
+                      <h3 className="text-lg font-bold text-[#382716] mb-2 leading-tight">{item.title}</h3>
+                      <div className="flex items-center gap-2 text-[#382716] text-sm mb-3">
                         <CiClock2 className="text-lg opacity-70" />
                         <span className="opacity-80">{item.date}</span>
                       </div>
-                      <p className="text-[#382716] text-xs text-left leading-relaxed opacity-80 flex-grow">{item.description}</p>
+                      <p className="text-[#382716] text-sm text-left leading-relaxed opacity-80 flex-grow">{item.description}</p>
                     </div>
                   </div>
                 ))}

@@ -121,16 +121,16 @@ export default function Home() {
 
       {/* News & Events Section */}
       <section ref={section4Ref} className="w-full flex justify-center bg-white py-16 animated-section slide-in-right">
-        <div className="w-full max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-[1.8fr_1.2fr] gap-x-12 gap-y-16 items-start">
+        <div className="w-full max-w-7xl mx-auto px-4 flex flex-col md:flex-row gap-x-12 gap-y-16 items-start">
           {/* News */}
-          <div className="flex flex-col items-center md:items-start">
+          <div className="flex flex-col items-center md:items-start w-full md:w-7/12">
             <h2 className="text-4xl font-semibold text-[#382716] mb-8 border-b-4 border-[#382716] pb-2">News</h2>
             <NewsCarousel />
           </div>
           {/* Events */}
-          <div className="flex flex-col items-center md:items-start">
+          <div className="flex flex-col items-center md:items-start w-full md:w-5/12">
             <h2 className="text-4xl font-semibold text-[#382716] mb-8 border-b-4 border-[#382716] pb-2">Events</h2>
-            <div className="flex flex-col gap-5 w-full max-w-sm md:max-w-full">
+            <div className="flex flex-col gap-5 w-full max-w-sm md:max-w-full h-[500px] overflow-y-auto pr-2">
               {eventsLoading && <div className="text-center py-8">Loading events...</div>}
               {eventsError && <div className="text-center text-red-600 py-8">{eventsError}</div>}
               {!eventsLoading && !eventsError && events.length === 0 && (
