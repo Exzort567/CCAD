@@ -32,8 +32,8 @@ const EventsForm: React.FC<EventsFormProps> = ({ event, onSave, onClose }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    if (name === 'description' && value.length > 135) {
-      setDescriptionError('Description cannot exceed 135 characters.');
+    if (name === 'description' && value.length > 254) {
+      setDescriptionError('Description cannot exceed 254 characters.');
     } else {
       setDescriptionError('');
     }
@@ -48,7 +48,7 @@ const EventsForm: React.FC<EventsFormProps> = ({ event, onSave, onClose }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.description.length > 135) {
+    if (formData.description.length > 254) {
       return; // Prevent submission if description is too long
     }
     onSave(formData, imageFile);

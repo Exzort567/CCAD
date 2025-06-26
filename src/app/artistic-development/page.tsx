@@ -121,7 +121,7 @@ const ArtisticDevelopmentPage = () => {
                   <div className="block bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer">
                     <div className="relative w-full h-56">
                       <Image
-                        src={event.images[0] || '/images/logo.jpg'}
+                        src={event.images && event.images.length > 0 ? event.images[0] : '/images/logo.jpg'}
                         alt={event.title}
                         layout="fill"
                         objectFit="cover"

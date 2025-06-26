@@ -63,16 +63,27 @@ const ProgramDetailPage = () => {
 
       // 2. If not found, fetch from the API
       try {
-        const response = await fetch(`/api/programs?slug=${slug}`);
+        const response = await fetch(`/api/programs?category=artistic-development`);
         if (!response.ok) {
-          throw new Error('Event not found from API.');
+          throw new Error('Could not fetch events from API.');
         }
-        const dbEvent = await response.json();
-        const formattedEvent = {
-          ...dbEvent,
-          date: formatDateRange(dbEvent.dateStart, dbEvent.dateEnd),
-        };
-        setEvent(formattedEvent);
+        const dbEvents = await response.json();
+        
+        const generateSlug = (title: string) => title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+
+        const dbEvent = dbEvents.find((e: any) => (e.slug || generateSlug(e.title)) === slug);
+
+        if (dbEvent) {
+          const formattedEvent = {
+            ...dbEvent,
+            slug: dbEvent.slug || generateSlug(dbEvent.title),
+            images: dbEvent.image ? [dbEvent.image] : dbEvent.images || [],
+            date: formatDateRange(dbEvent.dateStart, dbEvent.dateEnd),
+          };
+          setEvent(formattedEvent);
+        } else {
+          throw new Error('Event not found in API response.');
+        }
       } catch (err) {
         setError('The event you are looking for does not exist.');
       } finally {

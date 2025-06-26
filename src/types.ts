@@ -12,4 +12,14 @@ export interface Event {
     date: string;
     description: string;
     image: string;
+}
+
+export interface Program {
+  _id: string;
+  title: string;
+  category: string;
+  dateStart: string;
+  dateEnd?: string;
+  description: string;
+  image: string;
 } 

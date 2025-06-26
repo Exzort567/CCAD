@@ -1,19 +1,75 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cultureAndGovernance } from '../../data/programs';
 
-const ArtisticDevelopmentPage = () => {
+interface Program {
+  _id?: string;
+  title: string;
+  image?: string;
+  images: string[];
+  date: string;
+  dateStart?: string;
+  dateEnd?: string;
+  slug: string;
+}
+
+const formatDateRange = (start?: string, end?: string) => {
+  if (!start) return '';
+  if (!end || start === end) return new Date(start).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const startMonth = startDate.toLocaleString('default', { month: 'long' });
+  const endMonth = endDate.toLocaleString('default', { month: 'long' });
+
+  if (startMonth === endMonth && startDate.getFullYear() === endDate.getFullYear()) {
+    return `${startMonth} ${startDate.getDate()}-${endDate.getDate()}, ${startDate.getFullYear()}`;
+  }
+  return `${startMonth} ${startDate.getDate()}, ${startDate.getFullYear()} - ${endMonth} ${endDate.getDate()}, ${endDate.getFullYear()}`;
+};
+
+const CultureGovernancePage = () => {
   const [selectedYear, setSelectedYear] = useState<'2025' | '2024' | '2023'>('2023');
+  const [dbPrograms, setDbPrograms] = useState<Program[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const handleYearChange = (year: string) => {
     setSelectedYear(year as '2025' | '2024' | '2023');
   };
 
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/programs?category=Culture%20and%20Governance&year=${selectedYear}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch programs.');
+        }
+        const data = await response.json();
+        const formattedData: Program[] = data.map((program: any) => ({
+          ...program,
+          date: formatDateRange(program.dateStart, program.dateEnd),
+        }));
+        setDbPrograms(formattedData);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrograms();
+  }, [selectedYear]);
+
   const years = Object.keys(cultureAndGovernance).sort((a, b) => Number(b) - Number(a));
-  const events = cultureAndGovernance[selectedYear] || [];
+  const staticEvents: Program[] = cultureAndGovernance[selectedYear] || [];
+
+  const combinedEvents = [...dbPrograms, ...staticEvents];
 
   return (
     <div className="w-full bg-white text-[#382716]">
@@ -59,14 +115,16 @@ const ArtisticDevelopmentPage = () => {
         </div>
 
         <main>
+          {loading && <p className="text-center col-span-full">Loading...</p>}
+          {error && <p className="text-center col-span-full text-red-500">{error}</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-            {events.length > 0 ? (
-              events.map((event: any) => (
-                <Link key={event.slug} href={`/culture-governance/${event.slug}`} passHref>
+            {!loading && !error && combinedEvents.length > 0 ? (
+              combinedEvents.map((event: Program) => (
+                <Link key={event.slug || event._id} href={`/culture-governance/${event.slug || event._id}`} passHref>
                   <div className="block bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer">
                     <div className="relative w-full h-56">
                       <Image
-                        src={event.images[0] || '/images/logo.jpg'}
+                        src={event.image || (event.images && event.images[0]) || '/images/logo.jpg'}
                         alt={event.title}
                         layout="fill"
                         objectFit="cover"
@@ -74,15 +132,17 @@ const ArtisticDevelopmentPage = () => {
                     </div>
                     <div className="p-6">
                       <h3 className="text-xl font-semibold text-[#813F02] mb-2 h-16">{event.title.length > 47 ? `${event.title.substring(0, 55)}...` : event.title}</h3>
-                      <p className="text-gray-500">{event.date}</p>
+                      <p className="text-gray-500">{event.date || formatDateRange(event.dateStart, event.dateEnd)}</p>
                     </div>
                   </div>
                 </Link>
               ))
             ) : (
-              <p className="text-center md:col-span-2 lg:col-span-3 text-gray-500">
-                No events found for the selected year.
-              </p>
+              !loading && !error && (
+                <p className="text-center md:col-span-2 lg:col-span-3 text-gray-500">
+                  No events found for the selected year.
+                </p>
+              )
             )}
           </div>
         </main>
@@ -91,4 +151,4 @@ const ArtisticDevelopmentPage = () => {
   );
 };
 
-export default ArtisticDevelopmentPage; 
+export default CultureGovernancePage; 

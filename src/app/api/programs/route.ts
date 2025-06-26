@@ -1,87 +1,115 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '../../../lib/mongodb';
+import clientPromise from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
-// Function to generate a slug from a title
+export const dynamic = 'force-dynamic';
+
 const generateSlug = (title: string) => {
-  return title
-    .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '');
+  return title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 };
 
-export async function POST(request: Request) {
-  try {
-    const client = await clientPromise;
-    const db = client.db('ccad');
-    const programsCollection = db.collection('programs');
-
-    const programData = await request.json();
-    const { title, category, dateStart, dateEnd, description, images } = programData;
-
-    if (!title || !category || !dateStart || !description) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-    }
-
-    const slug = generateSlug(title);
-
-    const newProgram = {
-      title,
-      slug,
-      category,
-      dateStart: new Date(dateStart),
-      dateEnd: dateEnd ? new Date(dateEnd) : null,
-      description,
-      images: images || [], // Default to an empty array if not provided
-      createdAt: new Date(),
-    };
-
-    const result = await programsCollection.insertOne(newProgram);
-
-    return NextResponse.json(result, { status: 201 });
-  } catch (error) {
-    console.error('Error creating program:', error);
-    return NextResponse.json({ message: 'Error creating program', error }, { status: 500 });
-  }
-}
+const categoryMapping: { [key: string]: string } = {
+  'artistic-development': 'Artistic Development Programs - 7 Forms of Art',
+  'creative-industry': 'Creative Industry',
+  'culture-governance': 'Culture and Governance',
+  'heritage-programs': 'Cultural Heritage Programs',
+  'development-programs': 'Culture and Development Programs',
+};
 
 export async function GET(request: Request) {
   try {
-    const client = await clientPromise;
-    const db = client.db('ccad');
-    const programsCollection = db.collection('programs');
-    
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const year = searchParams.get('year');
-    const slug = searchParams.get('slug');
+    const id = searchParams.get('id');
 
-    // If a slug is provided, fetch a single program
-    if (slug) {
-      const program = await programsCollection.findOne({ slug });
-      if (program) {
-        return NextResponse.json(program, { status: 200 });
-      }
-      // We don't return 404 here to allow fallback to static data on the frontend
-    }
+    const client = await clientPromise;
+    const db = client.db('ccad');
     
-    const query: any = {};
-    if (category) {
-      query.category = category;
+    if (id) {
+      if (!ObjectId.isValid(id)) {
+        return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
+      }
+      const program = await db.collection('programs').findOne({ _id: new ObjectId(id) });
+      if (!program) {
+        return NextResponse.json({ error: 'Program not found' }, { status: 404 });
+      }
+      const formattedProgram = {
+        ...program,
+        slug: program.slug || generateSlug(program.title),
+        images: program.image ? [program.image] : program.images || [],
+      };
+      return NextResponse.json(formattedProgram);
+    }
+
+    let query: any = {};
+    if (category && categoryMapping[category]) {
+      query.category = categoryMapping[category];
+    } else if (category) {
+      query.category = decodeURIComponent(category);
     }
     if (year) {
-      // Query for events within the given year
-      const yearNum = parseInt(year, 10);
-      query.dateStart = {
-        $gte: new Date(yearNum, 0, 1),
-        $lt: new Date(yearNum + 1, 0, 1),
-      };
+      const startDate = new Date(parseInt(year), 0, 1);
+      const endDate = new Date(parseInt(year), 11, 31, 23, 59, 59);
+      query.dateStart = { $gte: startDate.toISOString().split('T')[0], $lte: endDate.toISOString().split('T')[0] };
     }
 
-    const programs = await programsCollection.find(query).sort({ dateStart: -1 }).toArray();
+    const programs = await db.collection('programs').find(query).sort({ dateStart: -1 }).toArray();
 
-    return NextResponse.json(programs, { status: 200 });
+    const formattedPrograms = programs.map(program => ({
+      ...program,
+      slug: program.slug || generateSlug(program.title),
+      images: program.image ? [program.image] : program.images || [],
+    }));
+    
+    return NextResponse.json(formattedPrograms);
   } catch (error) {
-    console.error('Error fetching programs:', error);
-    return NextResponse.json({ message: 'Error fetching programs', error }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
+}
+
+export async function POST(request: Request) {
+    try {
+        const client = await clientPromise;
+        const db = client.db('ccad');
+        const data = await request.json();
+        if (data.description && data.description.length > 255) {
+            return NextResponse.json({ error: 'Description cannot exceed 255 characters.' }, { status: 400 });
+        }
+        const result = await db.collection('programs').insertOne(data);
+        return NextResponse.json(result);
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    }
+}
+
+export async function PUT(request: Request) {
+    try {
+        const client = await clientPromise;
+        const db = client.db('ccad');
+        const { id, ...data } = await request.json();
+        if (data.description && data.description.length > 255) {
+            return NextResponse.json({ error: 'Description cannot exceed 255 characters.' }, { status: 400 });
+        }
+        const result = await db.collection('programs').updateOne({ _id: new ObjectId(id) }, { $set: data });
+        return NextResponse.json(result);
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        const client = await clientPromise;
+        const db = client.db('ccad');
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+        if (!id) {
+            return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+        }
+        const result = await db.collection('programs').deleteOne({ _id: new ObjectId(id) });
+        return NextResponse.json(result);
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    }
 } 

@@ -247,10 +247,10 @@ export const artisticDevelopmentPrograms = {
 
     { slug: "punla-2023", 
       title: "PUNLA 2023", 
-      date: "October 20, 2023", 
-      description: "A Visayas Leg Choral Clinic Series conducted by PCDA  and sponsored by the Provincial Government of Boho - Center for Culture and Arts Development (CCAD) through the Bohol Arts and Cultural Heritage (BACH) Council - Music Committee and Holy Name University. The 2-day workshop was joined by choir teachers/trainers from all over Bohol and participated by six choirs.",  
-      images: ["/images/n1.png","/images/n2.jpg","/images/n3.jpg"]
-     },
+      date: "October 20, 2023",
+      description: "Details for PUNLA 2023 to be added.",
+      images: ["/images/logo.jpg"]
+    },
 
     { slug: "exhibits-mugna-sa-bulawanong", 
       title: "EXHIBITS: Mugna sa Bulawanong hunahuna", 

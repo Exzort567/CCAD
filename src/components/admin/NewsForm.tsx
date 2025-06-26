@@ -32,8 +32,8 @@ const NewsForm: React.FC<NewsFormProps> = ({ news, onSave, onClose }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    if (name === 'description' && value.length > 320) {
-      setDescriptionError('Description cannot exceed 320 characters.');
+    if (name === 'description' && value.length > 255) {
+      setDescriptionError('Description cannot exceed 255 characters.');
     } else {
       setDescriptionError('');
     }
@@ -48,7 +48,7 @@ const NewsForm: React.FC<NewsFormProps> = ({ news, onSave, onClose }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.description.length > 320) {
+    if (formData.description.length > 254) {
       return; // Prevent submission
     }
     onSave(formData, imageFile);
