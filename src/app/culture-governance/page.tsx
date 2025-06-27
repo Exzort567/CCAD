@@ -139,9 +139,9 @@ const CultureGovernancePage = () => {
               ))
             ) : (
               !loading && !error && (
-                <p className="text-center md:col-span-2 lg:col-span-3 text-gray-500">
-                  No events found for the selected year.
-                </p>
+              <p className="text-center md:col-span-2 lg:col-span-3 text-gray-500">
+                No events found for the selected year.
+              </p>
               )
             )}
           </div>

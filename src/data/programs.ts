@@ -459,7 +459,7 @@ export const culturalHeritagePrograms = {
   ]
 }; 
 
-export const createiveIndustry = {
+export const creativeIndustry = {
   2025: [
 
   ],

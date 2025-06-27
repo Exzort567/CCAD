@@ -32,7 +32,7 @@ const ProgramDetailPage = () => {
       <div className="container mx-auto px-4 py-12 md:py-16 max-w-4xl">
 
         <header className="mb-10 text-center">
-          <h1 className="text-3xl font-semibold uppercase tracking-wider leading-relaxed">
+          <h1 className="text-2xl md:text-3xl font-semibold uppercase tracking-wider leading-relaxed">
             Preservation and Promotion of Boholano
             <br />
             Cultural Heritage and Arts
@@ -47,7 +47,7 @@ const ProgramDetailPage = () => {
 
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-3 text-xl font-bold text-[#382716] mb-8 group"
+          className="flex items-center gap-3 text-lg md:text-xl font-bold text-[#382716] mb-8 group"
         >
           <div className="bg-[#382716] text-white rounded-full p-2 group-hover:bg-[#5a4a3a] transition-colors">
             <ArrowLeft size={24} />
@@ -56,7 +56,7 @@ const ProgramDetailPage = () => {
         </button>
 
         <article>
-          <h2 className="text-3xl font-bold text-[#813F02] mb-2">{event.title}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#813F02] mb-2">{event.title}</h2>
           <p className="text-gray-500 mb-6">{event.date}</p>
           <p className="text-lg text-gray-800 leading-relaxed mb-10">{event.description}</p>
           

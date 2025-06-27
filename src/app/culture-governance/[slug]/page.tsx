@@ -48,32 +48,32 @@ const ProgramDetailPage = () => {
       const fetchProgram = async () => {
         setLoading(true);
         setError(null);
-        // Attempt to fetch from API if it looks like an ObjectId
-        if (typeof slug === 'string' && slug.length === 24 && /^[0-9a-fA-F]+$/.test(slug)) {
-          try {
-            const response = await fetch(`/api/programs?id=${slug}`);
-            if (response.ok) {
-              const data = await response.json();
-              setProgram(data);
-              setLoading(false);
-              return;
-            }
-          } catch (err) {
-            // Fall through to static search if API fails
-          }
-        }
-        
-        // Fallback to searching in static data
+
+        // First, check the fast static data
         const staticProgram = Object.values(cultureAndGovernance)
           .flat()
           .find(e => e.slug === slug);
 
         if (staticProgram) {
           setProgram(staticProgram);
-        } else {
-          setError('Program not found.');
+          setLoading(false);
+          return; // Found it, we're done.
         }
-        setLoading(false);
+
+        // If not found in static, fetch from the API using the slug
+        try {
+          const response = await fetch(`/api/programs?slug=${slug}`);
+          if (response.ok) {
+            const data = await response.json();
+            setProgram(data);
+          } else {
+            setError('Program not found.');
+          }
+        } catch (err) {
+          setError('An error occurred while fetching the program.');
+        } finally {
+          setLoading(false);
+        }
       };
       fetchProgram();
     }
@@ -104,7 +104,7 @@ const ProgramDetailPage = () => {
       <div className="container mx-auto px-4 py-12 md:py-16 max-w-4xl">
 
         <header className="mb-10 text-center">
-          <h1 className="text-3xl font-semibold uppercase tracking-wider leading-relaxed">
+          <h1 className="text-2xl md:text-3xl font-semibold uppercase tracking-wider leading-relaxed">
             Preservation and Promotion of Boholano
             <br />
             Cultural Heritage and Arts
@@ -119,7 +119,7 @@ const ProgramDetailPage = () => {
 
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-3 text-xl font-bold text-[#382716] mb-8 group"
+          className="flex items-center gap-3 text-lg md:text-xl font-bold text-[#382716] mb-8 group"
         >
           <div className="bg-[#382716] text-white rounded-full p-2 group-hover:bg-[#5a4a3a] transition-colors">
             <ArrowLeft size={24} />
@@ -128,7 +128,7 @@ const ProgramDetailPage = () => {
         </button>
 
         <article>
-          <h2 className="text-3xl font-bold text-[#813F02] mb-2">{program.title}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#813F02] mb-2">{program.title}</h2>
           <p className="text-gray-500 mb-6">{program.date || formatDateRange(program.dateStart, program.dateEnd)}</p>
           <p className="text-lg text-gray-800 leading-relaxed mb-10">{program.description}</p>
           

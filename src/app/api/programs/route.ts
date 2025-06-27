@@ -19,9 +19,10 @@ const categoryMapping: { [key: string]: string } = {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const slug = searchParams.get('slug');
     const category = searchParams.get('category');
     const year = searchParams.get('year');
-    const id = searchParams.get('id');
 
     const client = await clientPromise;
     const db = client.db('ccad');
@@ -31,6 +32,19 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
       }
       const program = await db.collection('programs').findOne({ _id: new ObjectId(id) });
+      if (!program) {
+        return NextResponse.json({ error: 'Program not found' }, { status: 404 });
+      }
+      const formattedProgram = {
+        ...program,
+        slug: program.slug || generateSlug(program.title),
+        images: program.image ? [program.image] : program.images || [],
+      };
+      return NextResponse.json(formattedProgram);
+    }
+    
+    if (slug) {
+      const program = await db.collection('programs').findOne({ slug: slug });
       if (!program) {
         return NextResponse.json({ error: 'Program not found' }, { status: 404 });
       }
@@ -76,7 +90,12 @@ export async function POST(request: Request) {
         if (data.description && data.description.length > 255) {
             return NextResponse.json({ error: 'Description cannot exceed 255 characters.' }, { status: 400 });
         }
-        const result = await db.collection('programs').insertOne(data);
+        
+        // Generate and add the slug before inserting
+        const slug = generateSlug(data.title);
+        const dataWithSlug = { ...data, slug };
+
+        const result = await db.collection('programs').insertOne(dataWithSlug);
         return NextResponse.json(result);
     } catch (error) {
         return NextResponse.json({ error: (error as Error).message }, { status: 500 });
