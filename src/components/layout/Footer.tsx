@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { FaInstagramSquare, FaYoutube, FaFacebookSquare } from 'react-icons/fa';
 
 export function Footer() {
   const governmentLinks = [
@@ -90,19 +91,19 @@ export function Footer() {
 
       {/* Bottom Bar */}
       <div className="bg-[#2c1c18]">
-        <div className="max-w-[1400px] mx-auto px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-2">
+        <div className="max-w-[1400px] mx-auto px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-lg text-white tracking-wide">©2025 Center for Culture and Arts Development – Bohol. All rights reserved.</p>
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-            <svg
-              width={40}
-              height={40}
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="text-white"
-            >
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-            </svg>
-          </a>
+          <div className="flex items-center gap-4">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+              <FaFacebookSquare className="text-white text-4xl" />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+              <FaInstagramSquare className="text-white text-4xl" />
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+              <FaYoutube className="text-white text-5xl" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
