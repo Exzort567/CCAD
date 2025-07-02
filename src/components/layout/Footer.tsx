@@ -83,7 +83,7 @@ export function Footer() {
       <div className="bg-[#f3e2bb] py-6">
         <div className="max-w-[1100px] mx-auto flex flex-wrap items-center justify-center gap-16">
           {partnerLogos.map((logo, index) => (
-            <Image key={index} src={logo.src} alt={logo.alt} width={logo.alt === 'BACA' || logo.alt === 'UNESCO' ? 120 : 90} height={logo.alt === 'BACA' ? 48 : (logo.alt === 'UNESCO' ? 60 : 90)} />
+            <Image key={index} src={logo.src} alt={logo.alt} width={logo.alt === 'BACA' || logo.alt === 'UNESCO' ? 90 : 70} height={logo.alt === 'BACA' ? 36 : (logo.alt === 'UNESCO' ? 45 : 70)} />
           ))}
         </div>
       </div>

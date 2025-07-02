@@ -57,7 +57,7 @@ export default function Home() {
             {/* Vision */}
             <div className="flex flex-col items-center">
               <div className="p-6 mb-4">
-                <Eye className="w-20 h-20 text-[#4a2e2a]" />
+                <Image src="/images/comedy.png" alt="Vision" width={80} height={80} />
               </div>
               <h3 className="text-4xl font-normal text-[#4a2e2a] mb-4">Vision</h3>
               <p className="text-[#4a2e2a] text-lg">
@@ -69,7 +69,7 @@ export default function Home() {
             {/* Mission */}
             <div className="flex flex-col items-center">
               <div className="p-6 mb-4">
-                <Rocket className="w-20 h-20 text-[#4a2e2a]" />
+                <Image src="/images/paint-palette.png" alt="Mission" width={80} height={80} />
               </div>
               <h3 className="text-4xl font-normal text-[#4a2e2a] mb-4">Mission</h3>
               <p className="text-[#4a2e2a] text-lg">
