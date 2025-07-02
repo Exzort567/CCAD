@@ -8,7 +8,7 @@ const Sidebar = ({ setSidebarOpen }: { setSidebarOpen?: (open: boolean) => void 
 
   const navItems = [
     { href: '/admin', label: 'Dashboard' },
-    { href: '/admin/news', label: 'New Management' },
+    { href: '/admin/news', label: 'News Management' },
     { href: '/admin/events', label: 'Events Management' },
     { href: '/admin/programs', label: 'Programs Management' },
   ];
