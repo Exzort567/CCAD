@@ -8,6 +8,15 @@ import NewsCarousel from "../components/NewsCarousel";
 import EventCard from "../components/EventCard";
 import { useSectionAnimation } from "@/hooks/useSectionAnimation";
 
+// Import Swiper React components and modules
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
 export default function Home() {
   const [events, setEvents] = useState<any[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
@@ -35,16 +44,91 @@ export default function Home() {
   const section3Ref = useSectionAnimation();
   const section4Ref = useSectionAnimation();
 
+  // Carousel images array
+  const carouselImages = [
+    {
+      src: "/images/banner.jpg",
+      alt: "Philippine Independence Day"
+    },
+    {
+      src: "/images/banner1.png",
+      alt: "Cultural Programs Banner"
+    },
+    {
+      src: "/images/banner2.jpg",
+      alt: "Cultural Heritage"
+    },
+    {
+      src: "/images/banner3.jpg",
+      alt: "Arts Development"
+    },
+  ];
+
   return (
     <div className="w-full">
+      {/* Banner Carousel Section */}
       <section ref={section1Ref} className="relative h-[160px] md:h-[600px] w-full bg-[#0052a4] animated-section slide-in-left">
-        <Image
-          src="/images/banner.jpg"
-          alt="Philippine Independence Day"
-          layout="fill"
-          objectFit="cover"
-          quality={100}
-        />
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          spaceBetween={0}
+          slidesPerView={1}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+          pagination={{
+            clickable: true,
+            bulletClass: 'swiper-pagination-bullet',
+            bulletActiveClass: 'swiper-pagination-bullet-active',
+            el: '.custom-pagination',
+          }}
+          loop={true}
+          speed={800}
+          className="h-full w-full"
+        >
+          {carouselImages.map((image, index) => (
+            <SwiperSlide key={index}>
+              <div className="relative h-full w-full">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  sizes="100vw"
+                  style={{ objectFit: 'cover' }}
+                  quality={100}
+                  priority={index === 0}
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        
+        {/* Custom Pagination - Hidden on Mobile */}
+        <div className="custom-pagination hidden md:flex absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 space-x-2">
+          {/* Pagination bullets will be rendered here by Swiper */}
+        </div>
+
+        {/* Custom Styles for Pagination */}
+        <style jsx global>{`
+          .custom-pagination .swiper-pagination-bullet {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 1;
+          }
+          
+          .custom-pagination .swiper-pagination-bullet-active {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.2);
+          }
+          
+          .custom-pagination .swiper-pagination-bullet:hover {
+            background: rgba(255, 255, 255, 0.8);
+          }
+        `}</style>
       </section>
 
       <section ref={section2Ref} id="vision-mission" className="py-20 bg-[#FFFFFF] animated-section slide-in-right">
