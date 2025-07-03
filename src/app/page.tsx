@@ -170,7 +170,7 @@ export default function Home() {
           <div className="w-full flex flex-col md:flex-row justify-center items-start gap-12 md:gap-10">
             {/* Logo - Hide on mobile */}
             <div className="hidden md:flex flex-shrink-0 flex-col justify-center items-center w-[340px] h-full">
-              <Image src="/images/ccadSquare.png" alt="CCAD Logo" width={320} height={320} className="mx-auto" />
+              <Image src="/images/ccadSquare.png" alt="CCAD Logo" width={270} height={270} className="mx-auto" />
             </div>
 
             {/* Mandates */}
