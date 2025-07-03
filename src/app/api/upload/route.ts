@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
+import cloudinary from '@/lib/cloudinary';
 
 export async function POST(request: NextRequest) {
   const data = await request.formData();
@@ -14,17 +13,34 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create a unique filename to prevent overwrites
-    const filename = `${Date.now()}-${file.name.replace(/\s/g, '_')}`;
-    const path = join(process.cwd(), 'public/uploads', filename);
+    // Clean the filename - remove extension and spaces
+    const cleanFileName = file.name.replace(/\.[^/.]+$/, "").replace(/\s/g, '_');
+    
+    // Upload to Cloudinary
+    const uploadResponse = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          resource_type: 'auto',
+          folder: 'ccad',
+          public_id: `${Date.now()}-${cleanFileName}`, // No double extensions
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(buffer);
+    });
 
-    await writeFile(path, buffer);
-
-    const publicPath = `/uploads/${filename}`;
-    return NextResponse.json({ success: true, path: publicPath });
+    const result = uploadResponse as any;
+    
+    return NextResponse.json({ 
+      success: true, 
+      path: result.secure_url,
+      public_id: result.public_id 
+    });
 
   } catch (error) {
-    console.error('Upload error:', error);
-    return NextResponse.json({ success: false, error: 'Failed to upload file' }, { status: 500 });
+    console.error('Cloudinary upload error:', error);
+    return NextResponse.json({ success: false, error: 'Failed to upload file to Cloudinary' }, { status: 500 });
   }
 } 
