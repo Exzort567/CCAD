@@ -54,12 +54,9 @@ export default function Home() {
       src: "/images/banner1.png",
       alt: "Cultural Programs Banner"
     },
+
     {
-      src: "/images/banner2.jpg",
-      alt: "Cultural Heritage"
-    },
-    {
-      src: "/images/banner3.jpg",
+      src: "/images/banner4.png",
       alt: "Arts Development"
     },
   ];
