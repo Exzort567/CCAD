@@ -22,4 +22,6 @@ export interface Program {
   dateEnd?: string;
   description: string;
   image: string;
+  images?: string[]; // Array of image URLs for multiple images
+  slug?: string;
 } 

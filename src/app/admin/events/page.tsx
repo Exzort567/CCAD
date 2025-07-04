@@ -16,17 +16,6 @@ const AdminEventsPage = () => {
     try {
       const res = await fetch('/api/events');
       const data = await res.json();
-      console.log('Fetched events:', data);
-      
-      // Debug: Log image URLs
-      data.forEach((event: Event, index: number) => {
-        console.log(`Event ${index + 1} (${event.title}):`, {
-          imageUrl: event.image,
-          isCloudinary: event.image?.includes('cloudinary.com'),
-          publicId: event.image ? getPublicIdFromUrl(event.image) : 'No image'
-        });
-      });
-      
       setEvents(data);
     } catch (error) {
       console.error('Failed to fetch events:', error);
@@ -112,8 +101,6 @@ const AdminEventsPage = () => {
   const getPublicIdFromUrl = (url: string) => {
     if (!isCloudinaryImage(url)) return url;
     
-    console.log('Original URL:', url);
-    
     // Extract public ID from Cloudinary URL
     // Format: https://res.cloudinary.com/cloud-name/image/upload/v1234567890/ccad/filename
     // We want just: ccad/filename
@@ -122,11 +109,9 @@ const AdminEventsPage = () => {
     if (match) {
       // Remove file extension from the public ID
       const publicId = match[1].replace(/\.[^/.]+$/, "");
-      console.log('Extracted public ID:', publicId);
       return publicId;
     }
     
-    console.log('No match found, returning original URL');
     return url;
   };
 

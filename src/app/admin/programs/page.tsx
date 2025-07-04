@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Program } from '@/types';
 import ProgramsForm from '@/components/admin/ProgramsForm';
+import { CldImage } from 'next-cloudinary';
 import Image from 'next/image';
 
 const programCategories = [
@@ -23,6 +24,27 @@ const AdminProgramsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortOrder, setSortOrder] = useState('date-desc');
   const [selectedYear, setSelectedYear] = useState('All');
+
+  // Helper function to check if image is from Cloudinary
+  const isCloudinaryImage = (imageUrl: string) => {
+    return imageUrl?.includes('cloudinary.com') || imageUrl?.includes('res.cloudinary.com');
+  };
+
+  // Helper function to extract public ID from Cloudinary URL
+  const getPublicIdFromUrl = (url: string) => {
+    if (!isCloudinaryImage(url)) return url;
+    
+    // Extract public ID from Cloudinary URL
+    // Format: https://res.cloudinary.com/cloud-name/image/upload/v1234567890/ccad/filename
+    // We want just: ccad/filename
+    const regex = /\/image\/upload\/(?:v\d+\/)?(.+)$/;
+    const match = url.match(regex);
+    if (match) {
+      // Remove file extension from the public ID
+      return match[1].replace(/\.[^/.]+$/, "");
+    }
+    return url;
+  };
 
   const fetchPrograms = async () => {
     try {
@@ -61,20 +83,29 @@ const AdminProgramsPage = () => {
     }
   };
 
-  const handleFormSave = async (formData: Omit<Program, '_id' | 'image'>, imageFile: File | null) => {
+  const handleFormSave = async (formData: Omit<Program, '_id' | 'image'>, imageFiles: File[]) => {
     try {
-      let imageUrl = selectedProgram?.image || '';
+      let imageUrls: string[] = [];
 
-      if (imageFile) {
-        const data = new FormData();
-        data.append('file', imageFile);
-        const res = await fetch('/api/upload', { method: 'POST', body: data });
-        const result = await res.json();
-        if (!result.success) throw new Error(result.error || 'Image upload failed');
-        imageUrl = result.path;
+      // Upload all images to Cloudinary
+      if (imageFiles.length > 0) {
+        const uploadPromises = imageFiles.map(async (file) => {
+          const data = new FormData();
+          data.append('file', file);
+          const res = await fetch('/api/upload', { method: 'POST', body: data });
+          const result = await res.json();
+          if (!result.success) throw new Error(result.error || 'Image upload failed');
+          return result.path;
+        });
+        
+        imageUrls = await Promise.all(uploadPromises);
       }
 
-      const dataToSave = { ...formData, image: imageUrl };
+      const dataToSave = { 
+        ...formData, 
+        image: imageUrls[0] || '', // Keep single image for backward compatibility
+        images: imageUrls // Add array of images
+      };
 
       if (selectedProgram) {
         await fetch('/api/programs', {
@@ -122,6 +153,14 @@ const AdminProgramsPage = () => {
       });
   }, [programs, selectedCategory, selectedYear, searchTerm, sortOrder]);
 
+  // Get display image for a program (first image from images array or fallback to single image)
+  const getDisplayImage = (program: Program) => {
+    if (program.images && program.images.length > 0) {
+      return program.images[0];
+    }
+    return program.image;
+  };
+
   if (loading) return <p>Loading...</p>;
 
   return (
@@ -155,34 +194,67 @@ const AdminProgramsPage = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredPrograms.map((programItem) => (
-          <div key={programItem._id} className="bg-white p-4 rounded-lg shadow-md flex flex-col">
-            <div className="relative w-full h-48 mb-4">
-              <Image src={programItem.image} alt={programItem.title} layout="fill" objectFit="cover" className="rounded-md" />
+        {filteredPrograms.map((programItem) => {
+          const displayImage = getDisplayImage(programItem);
+          const imageCount = programItem.images ? programItem.images.length : (programItem.image ? 1 : 0);
+          
+          return (
+            <div key={programItem._id} className="bg-white p-4 rounded-lg shadow-md flex flex-col">
+              <div className="relative w-full h-48 mb-4">
+                {displayImage ? (
+                  isCloudinaryImage(displayImage) ? (
+                    <CldImage
+                      src={getPublicIdFromUrl(displayImage)}
+                      alt={programItem.title}
+                      fill
+                      sizes="400px"
+                      crop="fill"
+                      className="rounded-md object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={displayImage}
+                      alt={programItem.title}
+                      fill
+                      sizes="400px"
+                      className="rounded-md object-cover"
+                    />
+                  )
+                ) : (
+                  <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+                    <span className="text-gray-400 text-sm">No Image</span>
+                  </div>
+                )}
+                {imageCount > 1 && (
+                  <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+                    +{imageCount - 1} more
+                  </div>
+                )}
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold">{programItem.title}</h2>
+                <p className="text-gray-500 text-sm">
+                  {new Date(programItem.dateStart).toLocaleDateString()}
+                  {programItem.dateEnd && ` - ${new Date(programItem.dateEnd).toLocaleDateString()}`}
+                </p>
+                <p className="mt-2 text-gray-700 break-words flex-grow">
+                  {programItem.description.length > 100 ? `${programItem.description.substring(0, 100)}...` : programItem.description}
+                </p>
+              </div>
+              <div className="mt-4 flex space-x-2">
+                <button onClick={() => handleEdit(programItem)} className="text-blue-500 hover:underline">Edit</button>
+                <button onClick={() => handleDelete(programItem._id)} className="text-red-500 hover:underline">Delete</button>
+              </div>
             </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold">{programItem.title}</h2>
-              <p className="text-gray-500 text-sm">
-                {new Date(programItem.dateStart).toLocaleDateString()}
-                {programItem.dateEnd && ` - ${new Date(programItem.dateEnd).toLocaleDateString()}`}
-              </p>
-              <p className="mt-2 text-gray-700 break-words flex-grow">
-                {programItem.description.length > 100 ? `${programItem.description.substring(0, 100)}...` : programItem.description}
-              </p>
-            </div>
-            <div className="mt-4 flex space-x-2">
-              <button onClick={() => handleEdit(programItem)} className="text-blue-500 hover:underline">Edit</button>
-              <button onClick={() => handleDelete(programItem._id)} className="text-red-500 hover:underline">Delete</button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {isModalOpen && (
         <ProgramsForm
           program={selectedProgram}
-          onSave={(formData, imageFile) => {
-            handleFormSave(formData, imageFile);
+          onSave={(formData, imageFiles) => {
+            handleFormSave(formData, imageFiles);
             setIsModalOpen(false);
           }}
           onClose={() => setIsModalOpen(false)}
