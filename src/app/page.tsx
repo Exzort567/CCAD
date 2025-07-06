@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Eye, Rocket } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import ObjectivesSection from "../components/ObjectivesSection";
+import DropdownSection from "../components/DropdownSection";
 import NewsCarousel from "../components/NewsCarousel";
 import EventCard from "../components/EventCard";
 import { useSectionAnimation } from "@/hooks/useSectionAnimation";
@@ -59,6 +59,18 @@ export default function Home() {
       src: "/images/banner4.png",
       alt: "Arts Development"
     },
+  ];
+
+  const objectives = [
+    'To foster awareness and appreciation of Boholano and Filipino Cultural Heritage',
+    'To initiate the formulation and enactment of appropriate legislation for the preservation and protection of Boholano cultural heritage',
+    'To help revitalize Boholano cultural traditions',
+    'To promote the growth of the creation of new artistic works',
+    'To foster cultural empowerment of communities, groups, and institutions',
+    'To help provide opportunities for the upgrading of cultural education in the schools',
+    'To promote cultural talents and eco-cultural heritage sites',
+    'To establish and develop appropriate venue; and',
+    'To develop sustainable community-based eco-cultural tourism',
   ];
 
   return (
@@ -194,7 +206,7 @@ export default function Home() {
             </div>
             {/* Objectives with Dropdown */}
             <div className="flex-1 flex flex-col items-center md:items-start w-full max-w-md mx-auto">
-              <ObjectivesSection />
+              <DropdownSection title="Objectives" items={objectives} />
             </div>
           </div>
         </div>
