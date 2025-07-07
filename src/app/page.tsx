@@ -61,6 +61,13 @@ export default function Home() {
     },
   ];
 
+  const mandates = [
+    'The preservation and revitalization of the Boholano Cultural Heritage, raising Boholano/Filipino pride and self-identity',
+    'The cultural empowerment of Boholano individuals, groups, communities, and institutions working for the highest standards of artistic expression, faithfully reflecting the Boholano people\'s values, ideas, struggles, and aspirations',
+    'Sustainable community-based cultural productivity integrated into eco-tourism for the economic development of Bohol',
+    'Cultural promotion and networking',
+  ];
+
   const objectives = [
     'To foster awareness and appreciation of Boholano and Filipino Cultural Heritage',
     'To initiate the formulation and enactment of appropriate legislation for the preservation and protection of Boholano cultural heritage',
@@ -109,7 +116,7 @@ export default function Home() {
                 />
               </div>
             </SwiperSlide>
-          ))}
+          ))} 
         </Swiper>
         
         {/* Custom Pagination - Hidden on Mobile */}
@@ -176,7 +183,7 @@ export default function Home() {
       {/* Mandates & Objectives Section */}
       <section ref={section3Ref} id="mandates-objectives" className="flex justify-center bg-white py-30 w-full animated-section slide-in-left">
         <div className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center">
-          <div className="w-full flex flex-col md:flex-row justify-center items-start gap-12 md:gap-10">
+          <div className="w-full flex flex-col md:flex-row justify-center items-stretch gap-12 md:gap-10">
             {/* Logo - Hide on mobile */}
             <div className="hidden md:flex flex-shrink-0 flex-col justify-center items-center w-[340px] h-full">
               <Image src="/images/ccadSquare.png" alt="CCAD Logo" width={270} height={270} className="mx-auto" />
@@ -184,25 +191,7 @@ export default function Home() {
 
             {/* Mandates */}
             <div className="flex-1 flex flex-col items-center md:items-start w-full max-w-md mx-auto">
-              <h2 className="text-3xl md:text-4xl font-normal text-[#4a2e2a] uppercase tracking-wide mb-6 text-center md:text-left">Mandates</h2>
-              <ul className="space-y-6 w-full">
-                <li className="flex items-start gap-3">
-                  <Image src="/images/bullet.png" alt="bullet" width={24} height={24} className="mt-1" />
-                  <span className="text-[#4a2e2a] text-lg text-justify">The preservation and revitalization of the Boholano Cultural Heritage, raising Boholano/Filipino pride and self-identity</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Image src="/images/bullet.png" alt="bullet" width={24} height={24} className="mt-1" />
-                  <span className="text-[#4a2e2a] text-lg text-justify">The cultural empowerment of Boholano individuals, groups, communities, and institutions working for the highest standards of artistic expression, faithfully reflecting the Boholano people's values, ideas, struggles, and aspirations</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Image src="/images/bullet.png" alt="bullet" width={24} height={24} className="mt-1" />
-                  <span className="text-[#4a2e2a] text-lg text-justify">Sustainable community-based cultural productivity integrated into eco-tourism for the economic development of Bohol</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Image src="/images/bullet.png" alt="bullet" width={24} height={24} className="mt-1" />
-                  <span className="text-[#4a2e2a] text-lg text-justify">Cultural promotion and networking</span>
-                </li>
-              </ul>
+              <DropdownSection title="Mandates" items={mandates} />
             </div>
             {/* Objectives with Dropdown */}
             <div className="flex-1 flex flex-col items-center md:items-start w-full max-w-md mx-auto">

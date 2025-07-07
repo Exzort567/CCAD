@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import DropdownSection from '@/components/DropdownSection';
+import { useSectionAnimation } from '@/hooks/useSectionAnimation';
 
 export default function BachCouncilPage() {
 
@@ -9,10 +10,6 @@ export default function BachCouncilPage() {
     'The preservation and revitalization of the Boholano Cultural Heritage, raising Boholano/Filipino pride and self-identity',
     'The cultural empowerment of Boholano individuals, groups, communities, and institutions working for the highest standards of artistic expression, faithfully reflecting the Boholano people\'s values, ideas, struggles, and aspirations',
     'Sustainable community-based cultural productivity integrated into eco-tourism for the economic development of Bohol',
-    'To foster cultural empowerment of communities, groups, and institutions',
-    'To foster awareness and appreciation of Boholano and Filipino Cultural Heritage',
-    'To initiate the formulation and enactment of appropriate legislation for the preservation and protection of Boholano cultural heritage',
-    'To help revitalize Boholano cultural traditions',
     'To promote the growth of the creation of new artistic works',
     'Cultural promotion and networking'
   ];
@@ -20,18 +17,13 @@ export default function BachCouncilPage() {
   const duties = [
     'To initiate the formulation and enactment of appropriate legislation for the preservation and protection of Boholano cultural heritage',
     'The cultural empowerment of Boholano individuals, groups, communities, and institutions working for the highest standards of artistic expression, faithfully reflecting the Boholano people\'s values, ideas, struggles, and aspirations',
-    'To initiate the formulation and enactment of appropriate legislation for the preservation and protection of Boholano cultural heritage',
-    'To help revitalize Boholano cultural traditions',
-    'The cultural empowerment of Boholano individuals, groups, communities, and institutions working for the highest standards of artistic expression, faithfully reflecting the Boholano people\'s values, ideas, struggles, and aspirations',
     'To help revitalize Boholano cultural traditions',
     'To promote the growth of the creation of new artistic works',
     'To foster cultural empowerment of communities, groups, and institutions',
-    'To foster awareness and appreciation of Boholano and Filipino Cultural Heritage',
-    'To initiate the formulation and enactment of appropriate legislation for the preservation and protection of Boholano cultural heritage',
-    'To help revitalize Boholano cultural traditions',
-    'To promote the growth of the creation of new artistic works',
-    'To foster cultural empowerment of communities, groups, and institutions'
+    'To foster awareness and appreciation of Boholano and Filipino Cultural Heritage'
   ];
+
+  const sectionRef = useSectionAnimation();
 
   return (
     <div className="min-h-screen bg-white py-4">
@@ -282,47 +274,28 @@ export default function BachCouncilPage() {
 
         {/* Image and BACH Logo */}
         <div className="flex flex-col items-center justify-center text-center px-4">
-          <div className="max-w-xs mx-auto">
-            <Image
-              src="/images/people.jpg"
-              alt="Bohol People"
-              width={400} 
-              height={250}
-              className="rounded-lg shadow-lg"
-            />
-          </div>
          
         </div>
         
         {/* Spacer */}
         <div className="my-12" />
+        
+        <section ref={sectionRef} className="flex justify-center bg-white py-12 w-full animated-section slide-in-left">
+          <div className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center">
+            <div className="w-full flex flex-col md:flex-row justify-center items-stretch gap-12 md:gap-10">
+          
+              {/* Objectives with Dropdown */}
+              <div className="flex-1 flex flex-col items-center md:items-start w-full max-w-md mx-auto">
+                <DropdownSection title="Objectives" items={objectives} />
+              </div>
 
-        {/* Objectives and Duties & Functions */}
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-center items-start md:items-stretch gap-12">
-            
-            {/* Objectives */}
-            <div className="w-full md:w-1/2 flex flex-col">
-              <DropdownSection 
-                title="Objectives" 
-                items={objectives} 
-                initialVisibleCount={2} 
-                bulletSrc="/images/bullet.png"
-              />
+              {/* Duties and Functions with Dropdown */}
+              <div className="flex-1 flex flex-col items-center md:items-start w-full max-w-md mx-auto">
+                <DropdownSection title="Duties and Functions" items={duties} />
+              </div>
             </div>
-
-            {/* Duties and Functions */}
-            <div className="w-full md:w-1/2 flex flex-col">
-              <DropdownSection 
-                title="Duties and Functions" 
-                items={duties}
-                initialVisibleCount={2}
-                bulletSrc="/images/bullet.png"
-              />
-            </div>
-
           </div>
-        </div>
+        </section>
 
         {/* Spacer at the bottom of the page */}
         <div className="my-12" />

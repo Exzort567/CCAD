@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import cloudinary from '@/lib/cloudinary';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,19 @@ const categoryMapping: { [key: string]: string } = {
   'culture-governance': 'Culture and Governance',
   'heritage-programs': 'Cultural Heritage Programs',
   'development-programs': 'Culture and Development Programs',
+};
+
+const getPublicIdFromUrl = (url: string) => {
+  try {
+    const regex = /\/image\/upload\/(?:v\d+\/)?(.+?)(\.\w+)?$/;
+    const match = url.match(regex);
+    if (match && match[1]) {
+      return match[1];
+    }
+  } catch (e) {
+    console.error("Failed to parse public ID from URL:", url, e);
+  }
+  return null;
 };
 
 export async function GET(request: Request) {
@@ -38,7 +52,7 @@ export async function GET(request: Request) {
       const formattedProgram = {
         ...program,
         slug: program.slug || generateSlug(program.title),
-        images: program.image ? [program.image] : program.images || [],
+        images: (program.images && program.images.length > 0) ? program.images : (program.image ? [program.image] : []),
       };
       return NextResponse.json(formattedProgram);
     }
@@ -51,7 +65,7 @@ export async function GET(request: Request) {
       const formattedProgram = {
         ...program,
         slug: program.slug || generateSlug(program.title),
-        images: program.image ? [program.image] : program.images || [],
+        images: (program.images && program.images.length > 0) ? program.images : (program.image ? [program.image] : []),
       };
       return NextResponse.json(formattedProgram);
     }
@@ -73,7 +87,7 @@ export async function GET(request: Request) {
     const formattedPrograms = programs.map(program => ({
       ...program,
       slug: program.slug || generateSlug(program.title),
-      images: program.image ? [program.image] : program.images || [],
+      images: (program.images && program.images.length > 0) ? program.images : (program.image ? [program.image] : []),
     }));
     
     return NextResponse.json(formattedPrograms);
@@ -123,10 +137,49 @@ export async function DELETE(request: Request) {
         const db = client.db('ccad');
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
-        if (!id) {
-            return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+
+        if (!id || !ObjectId.isValid(id)) {
+            return NextResponse.json({ error: 'Valid ID is required' }, { status: 400 });
         }
+
+        // Find the program to get image public IDs
+        const program = await db.collection('programs').findOne({ _id: new ObjectId(id) });
+
+        if (!program) {
+            return NextResponse.json({ error: 'Program not found' }, { status: 404 });
+        }
+        
+        const publicIds: string[] = [];
+
+        // Collect public IDs from 'images' array
+        if (program.images && Array.isArray(program.images)) {
+            for (const imageUrl of program.images) {
+                if(imageUrl) {
+                    const publicId = getPublicIdFromUrl(imageUrl);
+                    if (publicId) publicIds.push(publicId);
+                }
+            }
+        }
+        
+        // Fallback for single 'image' field
+        if (program.image && typeof program.image === 'string') {
+          const publicId = getPublicIdFromUrl(program.image);
+          if (publicId && !publicIds.includes(publicId)) { // Avoid duplicates
+            publicIds.push(publicId);
+          }
+        }
+        
+        // Delete images from Cloudinary
+        if (publicIds.length > 0) {
+            console.log(`Deleting ${publicIds.length} images from Cloudinary:`, publicIds);
+            await Promise.all(
+                publicIds.map(publicId => cloudinary.uploader.destroy(publicId))
+            );
+        }
+
+        // Delete the program from MongoDB
         const result = await db.collection('programs').deleteOne({ _id: new ObjectId(id) });
+        
         return NextResponse.json(result);
     } catch (error) {
         return NextResponse.json({ error: (error as Error).message }, { status: 500 });

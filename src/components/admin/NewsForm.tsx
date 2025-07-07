@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { News } from '@/types';
+import { FileUpload } from '../ui/file-upload';
 
 interface NewsFormProps {
   news: News | null;
@@ -40,9 +41,11 @@ const NewsForm: React.FC<NewsFormProps> = ({ news, onSave, onClose }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
+  const handleFileChange = (files: File[]) => {
+    if (files && files[0]) {
+      setImageFile(files[0]);
+    } else {
+      setImageFile(null);
     }
   };
 
@@ -107,13 +110,7 @@ const NewsForm: React.FC<NewsFormProps> = ({ news, onSave, onClose }) => {
             <label htmlFor="image" className="block text-gray-700 font-medium mb-2">
               Upload Image
             </label>
-            <input
-              type="file"
-              id="image"
-              name="image"
-              onChange={handleFileChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
+            <FileUpload onChange={handleFileChange} maxFiles={1} />
           </div>
           <div className="flex justify-end space-x-4">
             <button

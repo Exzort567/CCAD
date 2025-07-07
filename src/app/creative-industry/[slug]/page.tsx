@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { creativeIndustry } from '../../../data/programs';
 import { ArrowLeft } from 'lucide-react';
+import '../../../styles/holographic-card.css';
 
 interface Program {
   _id?: string;
@@ -149,7 +150,7 @@ const ProgramDetailPage = () => {
           {program.images && program.images.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {program.images.map((src, index) => (
-                <div key={index} className="relative w-full h-80 rounded-lg overflow-hidden shadow-lg">
+                <div key={index} className="holographic-card">
                   <Image
                     src={src}
                     alt={`${program.title} image ${index + 1}`}

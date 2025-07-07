@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Program } from '@/types';
+import { FileUpload } from '../ui/file-upload';
 
 interface ProgramsFormProps {
   program: Program | null;
@@ -52,19 +53,8 @@ const ProgramsForm: React.FC<ProgramsFormProps> = ({ program, onSave, onClose })
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      if (files.length > 4) {
-        alert('You can only upload a maximum of 4 images.');
-        return;
-      }
-      setImageFiles(files);
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  const handleFileChange = (files: File[]) => {
+    setImageFiles(files);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -148,39 +138,10 @@ const ProgramsForm: React.FC<ProgramsFormProps> = ({ program, onSave, onClose })
             <label htmlFor="images" className="block text-gray-700 font-medium mb-2">
               Upload Images (Max 4)
             </label>
-            <input
-              type="file"
-              id="images"
-              name="images"
-              multiple
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
+            <FileUpload onChange={handleFileChange} maxFiles={4} />
             <p className="text-sm text-gray-500 mt-1">
               {imageFiles.length}/4 images selected
             </p>
-            
-            {/* Preview selected images */}
-            {imageFiles.length > 0 && (
-              <div className="mt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Selected Images:</p>
-                <div className="space-y-2">
-                  {imageFiles.map((file, index) => (
-                    <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                      <span className="text-sm truncate">{file.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="text-red-500 hover:text-red-700 text-sm"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
           <div className="flex justify-end space-x-4">
             <button

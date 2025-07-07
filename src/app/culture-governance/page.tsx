@@ -46,7 +46,7 @@ const CultureGovernancePage = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/programs?category=Culture%20and%20Governance&year=${selectedYear}`);
+        const response = await fetch(`/api/programs?category=culture-governance&year=${selectedYear}`);
         if (!response.ok) {
           throw new Error('Failed to fetch programs.');
         }

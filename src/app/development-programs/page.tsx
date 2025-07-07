@@ -1,19 +1,72 @@
 "use client";
  
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cultureAndDevelopmentPrograms } from '../../data/programs';
 
+interface Program {
+  slug: string;
+  title: string;
+  images: string[];
+  date: string;
+  [key: string]: any;
+}
+
+const formatDateRange = (start: string, end: string | null) => {
+  if (!end) return new Date(start).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const startMonth = startDate.toLocaleString('default', { month: 'long' });
+  const endMonth = endDate.toLocaleString('default', { month: 'long' });
+
+  if (startMonth === endMonth && startDate.getFullYear() === endDate.getFullYear()) {
+    if (startDate.getDate() === endDate.getDate()) {
+      return `${startMonth} ${startDate.getDate()}, ${startDate.getFullYear()}`;
+    }
+    return `${startMonth} ${startDate.getDate()}-${endDate.getDate()}, ${startDate.getFullYear()}`;
+  }
+  return `${startMonth} ${startDate.getDate()}, ${startDate.getFullYear()} - ${endMonth} ${endDate.getDate()}, ${endDate.getFullYear()}`;
+};
+
 const DevelopmentProgramsPage = () => {
   const [selectedYear, setSelectedYear] = useState<'2024' | '2023'>('2024');
+  const [dbPrograms, setDbPrograms] = useState<Program[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const handleYearChange = (year: string) => {
     setSelectedYear(year as '2024' | '2023');
   };
 
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/programs?category=development-programs&year=${selectedYear}`);
+        if (!response.ok) throw new Error('Failed to fetch programs.');
+        
+        const data = await response.json();
+        const formattedData: Program[] = data.map((program: any) => ({
+          ...program,
+          date: formatDateRange(program.dateStart, program.dateEnd),
+        }));
+        setDbPrograms(formattedData);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrograms();
+  }, [selectedYear]);
+
   const years = Object.keys(cultureAndDevelopmentPrograms).sort((a, b) => Number(b) - Number(a));
-  const events = cultureAndDevelopmentPrograms[selectedYear] || [];
+  const staticEvents: Program[] = cultureAndDevelopmentPrograms[selectedYear] || [];
+  const combinedEvents = [...dbPrograms, ...staticEvents];
 
   return (
     <div className="w-full bg-white text-[#382716]">
@@ -59,9 +112,11 @@ const DevelopmentProgramsPage = () => {
         </div>
 
         <main>
+          {loading && <p className="text-center py-4">Loading new programs...</p>}
+          {error && <p className="text-center text-red-500 py-4">Error: {error}</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-            {events.length > 0 ? (
-              events.map((event: any) => (
+            {combinedEvents.length > 0 ? (
+              combinedEvents.map((event: any) => (
                 <Link key={event.slug} href={`/development-programs/${event.slug}`} passHref>
                   <div className="block bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer">
                     <div className="relative w-full h-56">
@@ -80,9 +135,11 @@ const DevelopmentProgramsPage = () => {
                 </Link>
               ))
             ) : (
+              !loading && (
               <p className="text-center md:col-span-2 lg:col-span-3 text-gray-500">
                 No events found for the selected year.
               </p>
+              )
             )}
           </div>
         </main>

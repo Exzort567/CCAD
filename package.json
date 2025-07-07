@@ -9,17 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tabler/icons-react": "^3.34.0",
     "cloudinary": "^2.7.0",
+    "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
     "lucide-react": "^0.519.0",
     "mongodb": "^6.17.0",
+    "motion": "^12.23.0",
     "next": "15.3.4",
     "next-auth": "^4.24.11",
     "next-cloudinary": "^6.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-dropzone": "^14.3.8",
     "react-icons": "^5.5.0",
-    "swiper": "^11.2.10"
+    "swiper": "^11.2.10",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
