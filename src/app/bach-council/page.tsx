@@ -171,8 +171,8 @@ export default function BachCouncilPage() {
 
           {/* Executive Board */}
           <div className="bg-gray-100 border-2 border-gray-400 rounded-xl p-4 w-full max-w-3xl">
-            <div className="bg-white border-2 border-gray-500 rounded-lg p-2 mb-4 text-center">
-              <h3 className="text-sm font-bold text-gray-900">EXECUTIVE BOARD</h3>
+            <div className="mb-4 text-center">
+              <h3 className="text-md font-bold text-gray-900 font-inknut-antiqua">EXECUTIVE BOARD</h3>
             </div>
             {renderExecutiveBoard()}
           </div>

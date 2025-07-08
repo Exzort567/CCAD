@@ -1,5 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "tailwindcss";
 
+/* Custom font utility */
+.font-inknut-antiqua {
+  font-family: 'Inknut Antiqua', serif !important;
+}
 
 /* Smooth transitions for theme changes */
 * {
