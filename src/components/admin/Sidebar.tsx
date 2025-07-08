@@ -11,6 +11,7 @@ const Sidebar = ({ setSidebarOpen }: { setSidebarOpen?: (open: boolean) => void 
     { href: '/admin/news', label: 'News Management' },
     { href: '/admin/events', label: 'Events Management' },
     { href: '/admin/programs', label: 'Programs Management' },
+    { href: '/admin/council', label: 'Council' },
   ];
 
   const handleLinkClick = () => {
