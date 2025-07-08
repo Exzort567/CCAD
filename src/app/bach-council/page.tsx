@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import DropdownSection from '@/components/DropdownSection';
 import { useSectionAnimation } from '@/hooks/useSectionAnimation';
+import FlippingBook from '@/components/FlippingBook';
 
 export default function BachCouncilPage() {
 
@@ -296,6 +297,8 @@ export default function BachCouncilPage() {
             </div>
           </div>
         </section>
+
+        <FlippingBook />
 
         {/* Spacer at the bottom of the page */}
         <div className="my-12" />

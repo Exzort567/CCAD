@@ -70,3 +70,47 @@
   -webkit-line-clamp: 3;
 }
 
+.page {
+  background: #fdfaf7;
+  border: 1px solid #c2b5a3;
+  padding: 20px;
+}
+
+.page-cover {
+  background: #fdfaf7;
+  border: 1px solid #c2b5a3;
+}
+
+.page-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.page-header {
+  height: 30px;
+  font-size: 10px;
+  color: #998466;
+  text-align: right;
+}
+
+.page-footer {
+  height: 30px;
+  border-top: 1px solid #c2b5a3;
+  font-size: 10px;
+  color: #998466;
+  text-align: right;
+}
+
+.page-text {
+  flex-grow: 1;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+  text-align: justify;
+  padding: 0 10px;
+}
+
