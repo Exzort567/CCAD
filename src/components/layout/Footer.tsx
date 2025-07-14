@@ -4,16 +4,11 @@ import { FaInstagramSquare, FaYoutube, FaFacebookSquare } from 'react-icons/fa';
 
 export function Footer() {
   const governmentLinks = [
-    'Office of the President',
-    'Office of the Vice President',
-    'Senate of the Philippines',
-    'House of Representatives',
-    'Supreme Court',
-    'Court of Appeals',
-    'Sandiganbayan',
-    'GOV.PH',
-    'Open Data Portal',
-    'Official Gazette',
+    { name: 'Province Government of Bohol', url: 'https://bohol.gov.ph/' },
+    { name: 'Bohol Island Geopark', url: 'https://geopark.bohol.gov.ph/en/' },
+    { name: 'Bohol - National Museum', url: 'https://www.nationalmuseum.gov.ph/our-museums/regional-area-and-site-museums/bohol/' },
+    { name: 'National Historical Commission of the Philippines', url: 'https://nhcp.gov.ph/' },
+    { name: 'Bohol Economic Development and Investment Promotion Office', url: 'https://boholinvest.bohol.gov.ph/' },
   ];
 
   const partnerLogos = [
@@ -30,12 +25,12 @@ export function Footer() {
         <div className="max-w-[1400px] mx-auto px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Government Links */}
           <div>
-            <h3 className="text-2xl font-bold uppercase tracking-wide mb-4">Government Links:</h3>
+            <h3 className="text-2xl font-bold uppercase tracking-wide mb-4">Bohol Government Links:</h3>
             <ul className="space-y-1 text-lg">
               {governmentLinks.map((link) => (
-                <li key={link}>
-                  <Link href="#" className="hover:underline">
-                    {link}
+                <li key={link.name}>
+                  <Link href={link.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    {link.name}
                   </Link>
                 </li>
               ))}
