@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { creativeIndustry } from '../../data/programs';
@@ -32,17 +32,17 @@ const formatDateRange = (start?: string, end?: string) => {
 };
 
 const CreativeIndustryPage = () => {
-  const [selectedYear, setSelectedYear] = useState<'2025' | '2024' | '2023'>('2023');
-  const [dbPrograms, setDbPrograms] = useState<Program[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string>('2023');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [allDbPrograms, setAllDbPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
-    const fetchPrograms = async () => {
+    const fetchAllPrograms = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/programs?category=creative-industry&year=${selectedYear}`);
+        const response = await fetch(`/api/programs?category=creative-industry`);
         if (!response.ok) {
           throw new Error('Failed to fetch programs.');
         }
@@ -52,7 +52,7 @@ const CreativeIndustryPage = () => {
           ...program,
           date: formatDateRange(program.dateStart, program.dateEnd),
         }));
-        setDbPrograms(formattedData);
+        setAllDbPrograms(formattedData);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -60,15 +60,40 @@ const CreativeIndustryPage = () => {
       }
     };
 
-    fetchPrograms();
-  }, [selectedYear]);
+    fetchAllPrograms();
+  }, []);
+
+  // Filter programs by selected year
+  const dbPrograms = useMemo(() => {
+    return allDbPrograms.filter(program => {
+      if (program.dateStart) {
+        const year = new Date(program.dateStart).getFullYear().toString();
+        return year === selectedYear;
+      }
+      return false;
+    });
+  }, [allDbPrograms, selectedYear]);
 
   const handleYearChange = (year: string) => {
-    setSelectedYear(year as '2025' | '2024' | '2023');
+    setSelectedYear(year);
   };
 
-  const years = Object.keys(creativeIndustry).sort((a, b) => Number(b) - Number(a));
-  const staticEvents: Program[] = creativeIndustry[selectedYear] || [];
+  // Get years from both static data and database programs
+  const years = useMemo(() => {
+    const staticYears = Object.keys(creativeIndustry);
+    const dbYears = allDbPrograms.map((program: Program) => {
+      if (program.dateStart) {
+        return new Date(program.dateStart).getFullYear().toString();
+      }
+      return null;
+    }).filter((year): year is string => year !== null);
+    
+    const allYears = [...staticYears, ...dbYears];
+    const uniqueYears = [...new Set(allYears)].sort((a, b) => Number(b) - Number(a));
+    return uniqueYears;
+  }, [allDbPrograms]);
+
+  const staticEvents: Program[] = (creativeIndustry as any)[selectedYear] || [];
 
   const combinedEvents = [...dbPrograms, ...staticEvents];
 
@@ -94,7 +119,7 @@ const CreativeIndustryPage = () => {
         </div>
 
         <div className="text-center my-12">
-          <div className="inline-block bg-[#c4a46a] text-white font-semibold px-8 py-4 shadow-md text-xl">
+          <div className="inline-block rounded-md bg-[#c4a46a] text-white font-semibold px-8 py-4 shadow-md text-xl">
             Creative Industry
           </div>
         </div>

@@ -25,3 +25,14 @@ export interface Program {
   images?: string[]; // Array of image URLs for multiple images
   slug?: string;
 } 
+
+export interface Banner {
+  _id: string;
+  title: string;
+  image: string;
+  alt: string;
+  order: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+} 

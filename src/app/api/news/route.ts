@@ -1,8 +1,22 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import cloudinary from '@/lib/cloudinary';
 
 export const dynamic = 'force-dynamic';
+
+const getPublicIdFromUrl = (url: string) => {
+  try {
+    const regex = /\/image\/upload\/(?:v\d+\/)?(.+?)(\.\w+)?$/;
+    const match = url.match(regex);
+    if (match && match[1]) {
+      return match[1];
+    }
+  } catch (e) {
+    console.error("Failed to parse public ID from URL:", url, e);
+  }
+  return null;
+};
 
 export async function GET() {
   try {
@@ -54,6 +68,24 @@ export async function DELETE(request: Request) {
         if (!id) {
             return NextResponse.json({ error: 'ID is required' }, { status: 400 });
         }
+
+        // Find the news item to get the image URL for deletion
+        const newsItem = await db.collection('news').findOne({ _id: new ObjectId(id) });
+        
+        if (!newsItem) {
+            return NextResponse.json({ error: 'News item not found' }, { status: 404 });
+        }
+
+        // Delete image from Cloudinary if it exists
+        if (newsItem.image && typeof newsItem.image === 'string') {
+            const publicId = getPublicIdFromUrl(newsItem.image);
+            if (publicId) {
+                console.log('Deleting news image from Cloudinary:', publicId);
+                await cloudinary.uploader.destroy(publicId);
+            }
+        }
+
+        // Delete from database
         const result = await db.collection('news').deleteOne({ _id: new ObjectId(id) });
         return NextResponse.json(result);
     } catch (error) {

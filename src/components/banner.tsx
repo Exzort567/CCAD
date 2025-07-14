@@ -1,36 +1,90 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, EffectCoverflow } from 'swiper/modules';
 import type { Swiper as SwiperCore } from 'swiper/types';
+import type { Banner } from '@/types';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/effect-coverflow';
 
-const carouselImages = [
+// Fallback images in case API fails
+const fallbackImages = [
     { src: "/images/banner.jpg", alt: "Philippine Independence Day" },
     { src: "/images/banner1.png", alt: "Cultural Programs Banner" },
     { src: "/images/banner4.png", alt: "Arts Development" },
-    { src: "/images/banner.jpg", alt: "A demonstration image" },
-    { src: "/images/banner1.png", alt: "Another demonstration image" },
 ];
 
 export default function Banner() {
     const [mainSwiper, setMainSwiper] = useState<SwiperCore | null>(null);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [banners, setBanners] = useState<Banner[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBanners = async () => {
+            try {
+                const response = await fetch('/api/banners');
+                if (response.ok) {
+                    const data = await response.json();
+                    setBanners(data);
+                } else {
+                    console.error('Failed to fetch banners');
+                }
+            } catch (error) {
+                console.error('Error fetching banners:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBanners();
+    }, []);
+
+    // Use banners from API if available, otherwise use fallback images
+    const carouselImages = banners.length > 0 
+        ? banners.map(banner => ({ src: banner.image, alt: banner.alt }))
+        : fallbackImages;
+
+    // Show loading state while fetching banners
+    if (loading) {
+        return (
+            <div className="relative w-full bg-gray-800 aspect-[3/1] md:aspect-auto md:h-[550px] flex items-center justify-center">
+                <div className="text-white">Loading banners...</div>
+            </div>
+        );
+    }
+
+    // Swiper configuration based on number of slides
+    const shouldLoop = carouselImages.length >= 3;
+    const swiperEffect = carouselImages.length >= 3 ? "coverflow" : "slide";
+    const shouldShowThumbnails = carouselImages.length > 1;
 
     const prevIndex = (activeIndex - 1 + carouselImages.length) % carouselImages.length;
     const nextIndex = (activeIndex + 1) % carouselImages.length;
 
-    const visibleThumbnails = [
-        { ...carouselImages[prevIndex], index: prevIndex },
-        { ...carouselImages[activeIndex], index: activeIndex },
-        { ...carouselImages[nextIndex], index: nextIndex },
-    ];
+    // Create visible thumbnails based on number of images
+    let visibleThumbnails = [];
+    if (carouselImages.length === 1) {
+        visibleThumbnails = [
+            { ...carouselImages[0], index: 0 }
+        ];
+    } else if (carouselImages.length === 2) {
+        visibleThumbnails = [
+            { ...carouselImages[0], index: 0 },
+            { ...carouselImages[1], index: 1 }
+        ];
+    } else {
+        visibleThumbnails = [
+            { ...carouselImages[prevIndex], index: prevIndex },
+            { ...carouselImages[activeIndex], index: activeIndex },
+            { ...carouselImages[nextIndex], index: nextIndex },
+        ];
+    }
 
     return (
         <div>
@@ -39,23 +93,24 @@ export default function Banner() {
             <section className="relative w-full bg-gray-800 aspect-[3/1] md:aspect-auto md:h-[550px]">
                 <Swiper
                     modules={[Autoplay, Navigation, EffectCoverflow]}
-                    effect="coverflow"
-                    coverflowEffect={{
+                    effect={swiperEffect as any}
+                    coverflowEffect={swiperEffect === "coverflow" ? {
                       rotate: 50,
                       stretch: 0,
                       depth: 100,
                       modifier: 1,
                       slideShadows: true,
-                    }}
-                    grabCursor={true}
-                    centeredSlides={true}
+                    } : undefined}
+                    grabCursor={carouselImages.length > 1}
+                    centeredSlides={swiperEffect === "coverflow"}
                     onSwiper={setMainSwiper}
-                    onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-                    loop={true}
-                    autoplay={{ delay: 4000, disableOnInteraction: false }}
-                    navigation={true}
+                    onSlideChange={(swiper) => setActiveIndex(shouldLoop ? swiper.realIndex : swiper.activeIndex)}
+                    loop={shouldLoop}
+                    autoplay={carouselImages.length > 1 ? { delay: 4000, disableOnInteraction: false } : false}
+                    navigation={carouselImages.length > 1}
                     className="h-full w-full"
-                    slidesPerView={'auto'}
+                    slidesPerView={swiperEffect === "coverflow" ? 'auto' : 1}
+                    spaceBetween={swiperEffect === "slide" ? 0 : undefined}
                 >
                     {carouselImages.map((image, index) => (
                         <SwiperSlide key={index} style={{ width: '100%', maxWidth: '100vw' }}>
@@ -86,50 +141,102 @@ export default function Banner() {
             </section>
 
             {/* The Thumbnail Navigation Section */}
-            <section className="bg-white w-full py-4">
-                <div className="flex justify-center items-center gap-3 md:gap-4">
-                    {/* Previous Thumbnail */}
-                    <div
-                        onClick={() => mainSwiper?.slidePrev()}
-                        className="relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform scale-90 opacity-60 hover:opacity-100 hover:scale-95"
-                    >
-                        <Image
-                            src={visibleThumbnails[0].src}
-                            alt={visibleThumbnails[0].alt}
-                            fill
-                            sizes="33vw"
-                            className="object-cover rounded-lg"
-                        />
-                    </div>
+            {shouldShowThumbnails && (
+                <section className="bg-white w-full py-4">
+                    <div className="flex justify-center items-center gap-3 md:gap-4">
+                        {carouselImages.length === 1 ? (
+                            /* Single thumbnail - no navigation needed */
+                            <div className="relative w-32 h-20 md:w-60 md:h-32 transition-all duration-300 ease-in-out transform scale-100 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg">
+                                <Image
+                                    src={carouselImages[0].src}
+                                    alt={carouselImages[0].alt}
+                                    fill
+                                    sizes="33vw"
+                                    className="object-cover rounded-md"
+                                />
+                            </div>
+                        ) : carouselImages.length === 2 ? (
+                            /* Two thumbnails - show both, highlight active */
+                            <>
+                                <div
+                                    onClick={() => mainSwiper?.slideTo(0)}
+                                    className={`relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform ${
+                                        activeIndex === 0 
+                                            ? 'scale-110 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg' 
+                                            : 'scale-90 opacity-60 hover:opacity-100 hover:scale-95'
+                                    }`}
+                                >
+                                    <Image
+                                        src={carouselImages[0].src}
+                                        alt={carouselImages[0].alt}
+                                        fill
+                                        sizes="50vw"
+                                        className="object-cover rounded-lg"
+                                    />
+                                </div>
+                                <div
+                                    onClick={() => mainSwiper?.slideTo(1)}
+                                    className={`relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform ${
+                                        activeIndex === 1 
+                                            ? 'scale-110 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg' 
+                                            : 'scale-90 opacity-60 hover:opacity-100 hover:scale-95'
+                                    }`}
+                                >
+                                    <Image
+                                        src={carouselImages[1].src}
+                                        alt={carouselImages[1].alt}
+                                        fill
+                                        sizes="50vw"
+                                        className="object-cover rounded-lg"
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            /* Three or more thumbnails - show prev, current, next */
+                            <>
+                                {/* Previous Thumbnail */}
+                                <div
+                                    onClick={() => mainSwiper?.slidePrev()}
+                                    className="relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform scale-90 opacity-60 hover:opacity-100 hover:scale-95"
+                                >
+                                    <Image
+                                        src={visibleThumbnails[0].src}
+                                        alt={visibleThumbnails[0].alt}
+                                        fill
+                                        sizes="33vw"
+                                        className="object-cover rounded-lg"
+                                    />
+                                </div>
 
-                    {/* Active Thumbnail */}
-                    <div
-                        className="relative w-32 h-20 md:w-60 md:h-32 transition-all duration-300 ease-in-out transform scale-100 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg"
-                    >
-                        <Image
-                            src={visibleThumbnails[1].src}
-                            alt={visibleThumbnails[1].alt}
-                            fill
-                            sizes="33vw"
-                            className="object-cover rounded-md"
-                        />
-                    </div>
+                                {/* Active Thumbnail */}
+                                <div className="relative w-32 h-20 md:w-60 md:h-32 transition-all duration-300 ease-in-out transform scale-100 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg">
+                                    <Image
+                                        src={visibleThumbnails[1].src}
+                                        alt={visibleThumbnails[1].alt}
+                                        fill
+                                        sizes="33vw"
+                                        className="object-cover rounded-md"
+                                    />
+                                </div>
 
-                    {/* Next Thumbnail */}
-                    <div
-                        onClick={() => mainSwiper?.slideNext()}
-                        className="relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform scale-90 opacity-60 hover:opacity-100 hover:scale-95"
-                    >
-                         <Image
-                            src={visibleThumbnails[2].src}
-                            alt={visibleThumbnails[2].alt}
-                            fill
-                            sizes="33vw"
-                            className="object-cover rounded-lg"
-                        />
+                                {/* Next Thumbnail */}
+                                <div
+                                    onClick={() => mainSwiper?.slideNext()}
+                                    className="relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform scale-90 opacity-60 hover:opacity-100 hover:scale-95"
+                                >
+                                    <Image
+                                        src={visibleThumbnails[2].src}
+                                        alt={visibleThumbnails[2].alt}
+                                        fill
+                                        sizes="33vw"
+                                        className="object-cover rounded-lg"
+                                    />
+                                </div>
+                            </>
+                        )}
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
         </div>
     );
 }

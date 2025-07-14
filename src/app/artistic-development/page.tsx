@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { artisticDevelopmentPrograms } from '../../data/programs';
@@ -31,21 +31,22 @@ const formatDateRange = (start: string, end: string | null) => {
 };
 
 const ArtisticDevelopmentPage = () => {
-  const [selectedYear, setSelectedYear] = useState<'2025' | '2024' | '2023'>('2025');
-  const [dbPrograms, setDbPrograms] = useState<Program[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string>('2025');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const handleYearChange = (year: string) => {
-    setSelectedYear(year as '2025' | '2024' | '2023');
+    setSelectedYear(year);
   };
 
+  const [allDbPrograms, setAllDbPrograms] = useState<Program[]>([]);
+
   useEffect(() => {
-    const fetchPrograms = async () => {
+    const fetchAllPrograms = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/programs?category=artistic-development&year=${selectedYear}`);
+        const response = await fetch(`/api/programs?category=artistic-development`);
         if (!response.ok) throw new Error('Failed to fetch programs.');
         
         const data = await response.json();
@@ -53,7 +54,7 @@ const ArtisticDevelopmentPage = () => {
           ...program,
           date: formatDateRange(program.dateStart, program.dateEnd),
         }));
-        setDbPrograms(formattedData);
+        setAllDbPrograms(formattedData);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -61,11 +62,36 @@ const ArtisticDevelopmentPage = () => {
       }
     };
 
-    fetchPrograms();
-  }, [selectedYear]);
+    fetchAllPrograms();
+  }, []);
 
-  const years = Object.keys(artisticDevelopmentPrograms).sort((a, b) => Number(b) - Number(a));
-  const staticEvents: Program[] = artisticDevelopmentPrograms[selectedYear] || [];
+  // Filter programs by selected year
+  const dbPrograms = useMemo(() => {
+    return allDbPrograms.filter(program => {
+      if (program.dateStart) {
+        const year = new Date(program.dateStart).getFullYear().toString();
+        return year === selectedYear;
+      }
+      return false;
+    });
+  }, [allDbPrograms, selectedYear]);
+
+  // Get years from both static data and database programs
+  const years = useMemo(() => {
+    const staticYears = Object.keys(artisticDevelopmentPrograms);
+    const dbYears = allDbPrograms.map((program: Program) => {
+      if (program.dateStart) {
+        return new Date(program.dateStart).getFullYear().toString();
+      }
+      return null;
+    }).filter((year): year is string => year !== null);
+    
+    const allYears = [...staticYears, ...dbYears];
+    const uniqueYears = [...new Set(allYears)].sort((a, b) => Number(b) - Number(a));
+    return uniqueYears;
+  }, [allDbPrograms]);
+
+  const staticEvents: Program[] = (artisticDevelopmentPrograms as any)[selectedYear] || [];
   const combinedEvents = [...dbPrograms, ...staticEvents];
 
   return (
@@ -90,7 +116,7 @@ const ArtisticDevelopmentPage = () => {
         </div>
 
         <div className="text-center my-12">
-          <div className="inline-block bg-[#c4a46a] text-white font-semibold px-8 py-4 shadow-md text-xl">
+          <div className="inline-block rounded-md bg-[#c4a46a] text-white font-semibold px-8 py-4 shadow-md text-xl">
             Artistic Development Programs – 7 Forms of Art
           </div>
         </div>

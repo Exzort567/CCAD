@@ -1,6 +1,6 @@
 "use client";
  
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { culturalHeritagePrograms } from '../../data/programs';
@@ -31,21 +31,21 @@ const formatDateRange = (start: string, end: string | null) => {
 };
 
 const HeritageProgramsPage = () => {
-  const [selectedYear, setSelectedYear] = useState<'2024' | '2023'>('2024');
-  const [dbPrograms, setDbPrograms] = useState<Program[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string>('2024');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [allDbPrograms, setAllDbPrograms] = useState<Program[]>([]);
 
   const handleYearChange = (year: string) => {
-    setSelectedYear(year as '2024' | '2023');
+    setSelectedYear(year);
   };
 
   useEffect(() => {
-    const fetchPrograms = async () => {
+    const fetchAllPrograms = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/programs?category=heritage-programs&year=${selectedYear}`);
+        const response = await fetch(`/api/programs?category=heritage-programs`);
         if (!response.ok) throw new Error('Failed to fetch programs.');
         
         const data = await response.json();
@@ -53,7 +53,7 @@ const HeritageProgramsPage = () => {
           ...program,
           date: formatDateRange(program.dateStart, program.dateEnd),
         }));
-        setDbPrograms(formattedData);
+        setAllDbPrograms(formattedData);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -61,11 +61,36 @@ const HeritageProgramsPage = () => {
       }
     };
 
-    fetchPrograms();
-  }, [selectedYear]);
+    fetchAllPrograms();
+  }, []);
 
-  const years = Object.keys(culturalHeritagePrograms).sort((a, b) => Number(b) - Number(a));
-  const staticEvents: Program[] = culturalHeritagePrograms[selectedYear] || [];
+  // Filter programs by selected year
+  const dbPrograms = useMemo(() => {
+    return allDbPrograms.filter(program => {
+      if (program.dateStart) {
+        const year = new Date(program.dateStart).getFullYear().toString();
+        return year === selectedYear;
+      }
+      return false;
+    });
+  }, [allDbPrograms, selectedYear]);
+
+  // Get years from both static data and database programs
+  const years = useMemo(() => {
+    const staticYears = Object.keys(culturalHeritagePrograms);
+    const dbYears = allDbPrograms.map((program: Program) => {
+      if (program.dateStart) {
+        return new Date(program.dateStart).getFullYear().toString();
+      }
+      return null;
+    }).filter((year): year is string => year !== null);
+    
+    const allYears = [...staticYears, ...dbYears];
+    const uniqueYears = [...new Set(allYears)].sort((a, b) => Number(b) - Number(a));
+    return uniqueYears;
+  }, [allDbPrograms]);
+
+  const staticEvents: Program[] = (culturalHeritagePrograms as any)[selectedYear] || [];
   const combinedEvents = [...dbPrograms, ...staticEvents];
 
   return (
@@ -90,7 +115,7 @@ const HeritageProgramsPage = () => {
         </div>
 
         <div className="text-center my-12">
-          <div className="inline-block bg-[#c4a46a] text-white font-semibold px-8 py-4 shadow-md text-xl">
+          <div className="inline-block rounded-md bg-[#c4a46a] text-white font-semibold px-8 py-4 shadow-md text-xl">
             Cultural Heritage Programs
           </div>
         </div>

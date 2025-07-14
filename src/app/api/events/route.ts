@@ -1,8 +1,22 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import cloudinary from '@/lib/cloudinary';
 
 export const dynamic = 'force-dynamic';
+
+const getPublicIdFromUrl = (url: string) => {
+  try {
+    const regex = /\/image\/upload\/(?:v\d+\/)?(.+?)(\.\w+)?$/;
+    const match = url.match(regex);
+    if (match && match[1]) {
+      return match[1];
+    }
+  } catch (e) {
+    console.error("Failed to parse public ID from URL:", url, e);
+  }
+  return null;
+};
 
 export async function GET() {
   try {
@@ -54,6 +68,24 @@ export async function DELETE(request: Request) {
         if (!id) {
             return NextResponse.json({ error: 'ID is required' }, { status: 400 });
         }
+
+        // Find the event to get the image URL for deletion
+        const event = await db.collection('events').findOne({ _id: new ObjectId(id) });
+        
+        if (!event) {
+            return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+        }
+
+        // Delete image from Cloudinary if it exists
+        if (event.image && typeof event.image === 'string') {
+            const publicId = getPublicIdFromUrl(event.image);
+            if (publicId) {
+                console.log('Deleting event image from Cloudinary:', publicId);
+                await cloudinary.uploader.destroy(publicId);
+            }
+        }
+
+        // Delete from database
         const result = await db.collection('events').deleteOne({ _id: new ObjectId(id) });
         return NextResponse.json(result);
     } catch (error) {

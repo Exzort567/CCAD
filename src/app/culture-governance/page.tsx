@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cultureAndGovernance } from '../../data/programs';
@@ -32,21 +32,21 @@ const formatDateRange = (start?: string, end?: string) => {
 };
 
 const CultureGovernancePage = () => {
-  const [selectedYear, setSelectedYear] = useState<'2025' | '2024' | '2023'>('2023');
-  const [dbPrograms, setDbPrograms] = useState<Program[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string>('2023');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [allDbPrograms, setAllDbPrograms] = useState<Program[]>([]);
 
   const handleYearChange = (year: string) => {
-    setSelectedYear(year as '2025' | '2024' | '2023');
+    setSelectedYear(year);
   };
 
   useEffect(() => {
-    const fetchPrograms = async () => {
+    const fetchAllPrograms = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/programs?category=culture-governance&year=${selectedYear}`);
+        const response = await fetch(`/api/programs?category=culture-governance`);
         if (!response.ok) {
           throw new Error('Failed to fetch programs.');
         }
@@ -55,7 +55,7 @@ const CultureGovernancePage = () => {
           ...program,
           date: formatDateRange(program.dateStart, program.dateEnd),
         }));
-        setDbPrograms(formattedData);
+        setAllDbPrograms(formattedData);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -63,11 +63,36 @@ const CultureGovernancePage = () => {
       }
     };
 
-    fetchPrograms();
-  }, [selectedYear]);
+    fetchAllPrograms();
+  }, []);
 
-  const years = Object.keys(cultureAndGovernance).sort((a, b) => Number(b) - Number(a));
-  const staticEvents: Program[] = cultureAndGovernance[selectedYear] || [];
+  // Filter programs by selected year
+  const dbPrograms = useMemo(() => {
+    return allDbPrograms.filter(program => {
+      if (program.dateStart) {
+        const year = new Date(program.dateStart).getFullYear().toString();
+        return year === selectedYear;
+      }
+      return false;
+    });
+  }, [allDbPrograms, selectedYear]);
+
+  // Get years from both static data and database programs
+  const years = useMemo(() => {
+    const staticYears = Object.keys(cultureAndGovernance);
+    const dbYears = allDbPrograms.map((program: Program) => {
+      if (program.dateStart) {
+        return new Date(program.dateStart).getFullYear().toString();
+      }
+      return null;
+    }).filter((year): year is string => year !== null);
+    
+    const allYears = [...staticYears, ...dbYears];
+    const uniqueYears = [...new Set(allYears)].sort((a, b) => Number(b) - Number(a));
+    return uniqueYears;
+  }, [allDbPrograms]);
+
+  const staticEvents: Program[] = (cultureAndGovernance as any)[selectedYear] || [];
 
   const combinedEvents = [...dbPrograms, ...staticEvents];
 
@@ -93,7 +118,7 @@ const CultureGovernancePage = () => {
         </div>
 
         <div className="text-center my-12">
-          <div className="inline-block bg-[#c4a46a] text-white font-semibold px-8 py-4 shadow-md text-xl">
+          <div className="inline-block rounded-md bg-[#c4a46a] text-white font-semibold px-8 py-4 shadow-md text-xl">
             Culture and Governance
           </div>
         </div>
