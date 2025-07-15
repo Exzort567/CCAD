@@ -7,7 +7,7 @@ let client;
 let clientPromise: Promise<MongoClient>;
 
 if (!uri) {
-  throw new Error('Please add your Mongo URI to .env.local');
+  throw new Error('Please add your MongoDB URI to environment variables (MONGODB_URI)');
 }
 
 if (process.env.NODE_ENV === 'development') {

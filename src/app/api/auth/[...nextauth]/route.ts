@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
 import clientPromise from '@/lib/mongodb';
 
 const handler = NextAuth({
@@ -20,9 +21,7 @@ const handler = NextAuth({
           const db = client.db('ccad');
           const user = await db.collection('users').findOne({ username: credentials.username });
 
-          if (user && user.password === credentials.password) {
-            // IMPORTANT: Plain text password comparison is not secure!
-            // We will fix this in the next step.
+          if (user && await bcrypt.compare(credentials.password, user.password)) {
             return { id: user._id.toString(), name: user.username, email: '' };
           }
         } catch (e) {
