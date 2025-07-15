@@ -45,8 +45,8 @@ const ProgramsForm: React.FC<ProgramsFormProps> = ({ program, onSave, onClose })
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    if (name === 'description' && value.length > 255) {
-      setDescriptionError('Description cannot exceed 255 characters.');
+    if (name === 'description' && value.length > 5000) {
+      setDescriptionError('Description cannot exceed 5000 characters.');
     } else {
       setDescriptionError('');
     }
@@ -59,7 +59,7 @@ const ProgramsForm: React.FC<ProgramsFormProps> = ({ program, onSave, onClose })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.description.length > 255) {
+    if (formData.description.length > 5000) {
       return;
     }
     onSave(formData, imageFiles);
@@ -128,9 +128,10 @@ const ProgramsForm: React.FC<ProgramsFormProps> = ({ program, onSave, onClose })
               name="description"
               value={formData.description}
               onChange={handleChange}
-              rows={4}
-              className={`w-full p-2 border ${descriptionError ? 'border-red-500' : 'border-gray-300'} rounded-md`}
+              rows={8}
+              className={`w-full p-2 border ${descriptionError ? 'border-red-500' : 'border-gray-300'} rounded-md resize-vertical`}
               required
+              placeholder="Enter a detailed description..."
             />
             {descriptionError && <p className="text-red-500 text-sm mt-1">{descriptionError}</p>}
           </div>

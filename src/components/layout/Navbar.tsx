@@ -17,7 +17,7 @@ const programLinks = [
 const aboutUsLinks = [
   { label: 'Vision and Mission', href: '/#vision-mission' },
   { label: 'Mandates and Objectives', href: '/#mandates-objectives' },
-  { label: 'What is CCAD?', href: '#' },
+  { label: 'What is CCAD?', href: '/what-is-ccad' },
 ];
 
 export function Navbar() {
