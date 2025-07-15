@@ -5,14 +5,15 @@ import cloudinary from '@/lib/cloudinary';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const client = await clientPromise;
     const db = client.db('ccad');
     
     // Find the banner to get the image URL for deletion
-    const banner = await db.collection('banners').findOne({ _id: new ObjectId(params.id) });
+    const banner = await db.collection('banners').findOne({ _id: new ObjectId(id) });
     
     if (!banner) {
       return NextResponse.json({ error: 'Banner not found' }, { status: 404 });
@@ -28,7 +29,7 @@ export async function DELETE(
     }
 
     // Delete from database
-    await db.collection('banners').deleteOne({ _id: new ObjectId(params.id) });
+    await db.collection('banners').deleteOne({ _id: new ObjectId(id) });
 
     return NextResponse.json({ success: true, message: 'Banner deleted successfully' });
 
