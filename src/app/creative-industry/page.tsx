@@ -129,7 +129,7 @@ const CreativeIndustryPage = () => {
             <button
               key={year}
               onClick={() => handleYearChange(year)}
-              className={`px-10 py-4 text-lg font-semibold mx-2 transition-colors ${
+              className={`px-10 py-4 text-lg font-semibold rounded-xl mx-2 transition-colors ${
                 selectedYear === year
                   ? 'bg-[#813F02] text-white shadow-md'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'

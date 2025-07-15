@@ -17,6 +17,7 @@ interface CouncilMember {
 
 export default function BachCouncilPage() {
   const [council, setCouncil] = useState<CouncilMember[]>([]);
+  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     const fetchCouncil = async () => {
@@ -26,6 +27,13 @@ export default function BachCouncilPage() {
     };
     fetchCouncil();
   }, []);
+
+  const toggleSection = (sectionName: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionName]: !prev[sectionName]
+    }));
+  };
 
   const objectives = [
     'The preservation and revitalization of the Boholano Cultural Heritage, raising Boholano/Filipino pride and self-identity',
@@ -99,6 +107,8 @@ export default function BachCouncilPage() {
         const committeeMembers = committees
             .filter(cm => cm.committee === sectionName)
             .sort((a, b) => (a.order || 0) - (b.order || 0));
+        
+        const isExpanded = expandedSections[sectionName] || false;
 
         return (
             <div key={head._id} className="flex flex-col items-center">
@@ -110,15 +120,59 @@ export default function BachCouncilPage() {
 
                 <div className="w-0.5 h-4 bg-gray-800"></div>
 
-                <div className="bg-gray-100 border-2 border-gray-400 rounded-xl p-2 w-full">
-                    <p className="text-xs font-bold text-gray-900 mb-2">Committee Heads & Members:</p>
-                    <div className="space-y-1 text-xs">
-                        {committeeMembers.map(cm => (
-                            <div key={cm._id}>
-                                <h6 className="font-bold text-gray-900">{cm.name}</h6>
-                                <p className="text-gray-700">{cm.position}</p>
-                            </div>
-                        ))}
+                <div className="bg-gray-100 border-2 border-gray-400 rounded-xl w-full overflow-hidden transition-all duration-300 ease-in-out">
+                    {/* Header with toggle button */}
+                    <div 
+                        className="p-2 cursor-pointer hover:bg-gray-200 transition-colors duration-200 flex items-center justify-between"
+                        onClick={() => toggleSection(sectionName)}
+                    >
+                        <p className="text-xs font-bold text-gray-900">Committee Heads & Members:</p>
+                        <div className={`transition-transform duration-300 ease-in-out ${isExpanded ? 'rotate-180' : 'rotate-0'}`}>
+                            <svg 
+                                width="16" 
+                                height="16" 
+                                viewBox="0 0 24 24" 
+                                fill="none" 
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="text-gray-600"
+                            >
+                                <path 
+                                    d="M7 10L12 15L17 10" 
+                                    stroke="currentColor" 
+                                    strokeWidth="2" 
+                                    strokeLinecap="round" 
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    {/* Collapsible content */}
+                    <div 
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                            isExpanded 
+                                ? 'max-h-96 opacity-100' 
+                                : 'max-h-0 opacity-0'
+                        }`}
+                    >
+                        <div className="px-2 pb-2 space-y-1 text-xs">
+                            {committeeMembers.map((cm, index) => (
+                                <div 
+                                    key={cm._id}
+                                    className={`transform transition-all duration-300 ease-in-out ${
+                                        isExpanded 
+                                            ? 'translate-y-0 opacity-100' 
+                                            : 'translate-y-[-10px] opacity-0'
+                                    }`}
+                                    style={{ 
+                                        transitionDelay: isExpanded ? `${index * 50}ms` : '0ms' 
+                                    }}
+                                >
+                                    <h6 className="font-bold text-gray-900">{cm.name}</h6>
+                                    <p className="text-gray-700">{cm.position}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

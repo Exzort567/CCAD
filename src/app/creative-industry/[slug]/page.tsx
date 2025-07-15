@@ -134,7 +134,7 @@ const ProgramDetailPage = () => {
 
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-3 text-lg md:text-xl font-bold text-[#382716] mb-8 group"
+          className="flex items-center gap-3 text-lg md:text-xl font-bold text-[#742B2B] mb-8 group"
         >
           <div className="bg-[#382716] text-white rounded-full p-2 group-hover:bg-[#5a4a3a] transition-colors">
             <ArrowLeft size={24} />
@@ -143,8 +143,8 @@ const ProgramDetailPage = () => {
         </button>
 
         <article>
-          <h2 className="text-2xl md:text-3xl font-bold text-[#813F02] mb-2">{program.title}</h2>
-          <p className="text-gray-500 mb-6">{program.date || formatDateRange(program.dateStart, program.dateEnd)}</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#742B2B] mb-2">{program.title}</h2>
+          <p className="text-[#742B2B] mb-6">{program.date || formatDateRange(program.dateStart, program.dateEnd)}</p>
           <p className="text-lg text-gray-800 leading-relaxed mb-10">{program.description}</p>
           
           {program.images && program.images.length > 0 && (
