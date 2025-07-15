@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { CiClock2 } from "react-icons/ci";
 import { useMediaQuery } from '../hooks/useMediaQuery';
@@ -16,53 +15,67 @@ interface NewsItem {
   description: string;
 }
 
-function NewsCarousel() {
-  const searchParams = useSearchParams();
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface NewsCarouselProps {
+  news?: NewsItem[];
+  loading?: boolean;
+  error?: string | null;
+  selectedNews?: NewsItem | null;
+  isModalOpen?: boolean;
+  onNewsClick?: (newsItem: NewsItem) => void;
+  onCloseModal?: () => void;
+}
+
+function NewsCarousel({ 
+  news: propNews,
+  loading: propLoading,
+  error: propError,
+  selectedNews: propSelectedNews,
+  isModalOpen: propIsModalOpen,
+  onNewsClick,
+  onCloseModal
+}: NewsCarouselProps) {
+  const [news, setNews] = useState<NewsItem[]>(propNews || []);
+  const [loading, setLoading] = useState(propLoading ?? true);
+  const [error, setError] = useState<string | null>(propError ?? null);
   const [index, setIndex] = useState(0);
-  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(propSelectedNews || null);
+  const [isModalOpen, setIsModalOpen] = useState(propIsModalOpen ?? false);
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
+  // Update state when props change
   useEffect(() => {
-    setLoading(true);
-    fetch('/api/news')
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch news');
-        return res.json();
-      })
-      .then(data => {
-        setNews(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
-
-  // Check for shared news URL parameter
-  useEffect(() => {
-    const newsId = searchParams.get('news');
-    if (newsId && news.length > 0 && !isModalOpen) {
-      // Find news by ID or title slug
-      const newsItem = news.find(n => 
-        n._id === newsId || 
-        encodeURIComponent(n.title.toLowerCase().replace(/\s+/g, '-')) === newsId
-      );
-      
-      if (newsItem) {
-        setSelectedNews(newsItem);
-        setIsModalOpen(true);
-        // Clean up URL without reloading
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.delete('news');
-        window.history.replaceState({}, '', newUrl.toString());
-      }
+    if (propNews) {
+      setNews(propNews);
+      setLoading(propLoading ?? false);
+      setError(propError ?? null);
+    } else {
+      // Fetch news only if not provided as props
+      setLoading(true);
+      fetch('/api/news')
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch news');
+          return res.json();
+        })
+        .then(data => {
+          setNews(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          setError(err.message);
+          setLoading(false);
+        });
     }
-  }, [news, searchParams, isModalOpen]);
+  }, [propNews, propLoading, propError]);
+
+  // Update modal state when props change
+  useEffect(() => {
+    if (propSelectedNews !== undefined) {
+      setSelectedNews(propSelectedNews);
+    }
+    if (propIsModalOpen !== undefined) {
+      setIsModalOpen(propIsModalOpen);
+    }
+  }, [propSelectedNews, propIsModalOpen]);
 
   const itemsPerSlide = isDesktop ? 2 : 1;
 
@@ -86,13 +99,21 @@ function NewsCarousel() {
   };
 
   const handleNewsClick = (newsItem: NewsItem) => {
-    setSelectedNews(newsItem);
-    setIsModalOpen(true);
+    if (onNewsClick) {
+      onNewsClick(newsItem);
+    } else {
+      setSelectedNews(newsItem);
+      setIsModalOpen(true);
+    }
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedNews(null);
+    if (onCloseModal) {
+      onCloseModal();
+    } else {
+      setIsModalOpen(false);
+      setSelectedNews(null);
+    }
   };
 
   if (loading) {

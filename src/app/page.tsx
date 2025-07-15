@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { Eye, Rocket } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
 import DropdownSection from "../components/DropdownSection";
 import NewsCarousel from "../components/NewsCarousel";
 import EventCard from "../components/EventCard";
 import NewsEventModal from "../components/NewsEventModal";
+import URLParameterHandler from "../components/URLParameterHandler";
 import { useSectionAnimation } from "@/hooks/useSectionAnimation";
 
 // Import Swiper React components and modules
@@ -22,12 +23,14 @@ import Banner from "@/components/banner";
 
 export default function Home() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [events, setEvents] = useState<any[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [news, setNews] = useState<any[]>([]);
+  const [selectedNews, setSelectedNews] = useState<any | null>(null);
+  const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
 
   useEffect(() => {
     setEventsLoading(true);
@@ -46,26 +49,30 @@ export default function Home() {
       });
   }, []);
 
-  // Check for shared event URL parameter
   useEffect(() => {
-    const eventId = searchParams.get('event');
-    if (eventId && events.length > 0 && !isEventModalOpen) {
-      // Find event by ID or title slug
-      const event = events.find(e => 
-        e._id === eventId || 
-        encodeURIComponent(e.title.toLowerCase().replace(/\s+/g, '-')) === eventId
-      );
-      
-      if (event) {
-        setSelectedEvent(event);
-        setIsEventModalOpen(true);
-        // Clean up URL without reloading
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.delete('event');
-        window.history.replaceState({}, '', newUrl.toString());
-      }
-    }
-  }, [events, searchParams, isEventModalOpen]);
+    fetch('/api/news')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch news');
+        return res.json();
+      })
+      .then(data => {
+        setNews(data);
+      })
+      .catch(err => {
+        console.error('Error fetching news:', err);
+      });
+  }, []);
+
+  // Handler functions for URL parameter handling
+  const handleEventOpen = (event: any) => {
+    setSelectedEvent(event);
+    setIsEventModalOpen(true);
+  };
+
+  const handleNewsOpen = (newsItem: any) => {
+    setSelectedNews(newsItem);
+    setIsNewsModalOpen(true);
+  };
 
   const section1Ref = useSectionAnimation();
   const section2Ref = useSectionAnimation();
@@ -80,6 +87,11 @@ export default function Home() {
   const handleCloseEventModal = () => {
     setIsEventModalOpen(false);
     setSelectedEvent(null);
+  };
+
+  const handleCloseNewsModal = () => {
+    setIsNewsModalOpen(false);
+    setSelectedNews(null);
   };
 
   // Carousel images array
@@ -119,6 +131,18 @@ export default function Home() {
 
   return (
     <div className="w-full overflow-hidden">
+      {/* URL Parameter Handler for shared links */}
+      <Suspense fallback={null}>
+        <URLParameterHandler
+          events={events}
+          news={news}
+          isEventModalOpen={isEventModalOpen}
+          isNewsModalOpen={isNewsModalOpen}
+          onEventOpen={handleEventOpen}
+          onNewsOpen={handleNewsOpen}
+        />
+      </Suspense>
+
       {/* Banner Carousel Section */}
       <div className="relative">
         <Banner/>
@@ -255,7 +279,13 @@ export default function Home() {
                   <h3 className="text-4xl font-bold text-[#382716]">News</h3>
                   <div className="flex-1 h-1 bg-gradient-to-r from-[#382716] to-transparent rounded-full"></div>
                 </div>
-                <NewsCarousel />
+                <NewsCarousel 
+              news={news}
+              selectedNews={selectedNews}
+              isModalOpen={isNewsModalOpen}
+              onNewsClick={handleNewsOpen}
+              onCloseModal={handleCloseNewsModal}
+            />
               </div>
             </div>
 
@@ -321,6 +351,14 @@ export default function Home() {
         onClose={handleCloseEventModal}
         item={selectedEvent}
         type="event"
+      />
+
+      {/* News Modal */}
+      <NewsEventModal
+        isOpen={isNewsModalOpen}
+        onClose={handleCloseNewsModal}
+        item={selectedNews}
+        type="news"
       />
     </div>
   );
