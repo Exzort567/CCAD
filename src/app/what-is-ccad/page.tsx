@@ -12,7 +12,34 @@ export default function WhatIsCCADPage() {
   const section4Ref = useSectionAnimation();
   const section5Ref = useSectionAnimation();
 
-  const coreValues = [
+  const [content, setContent] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const res = await fetch('/api/ccad-content');
+        const data = await res.json();
+        setContent(data);
+      } catch (error) {
+        console.error('Failed to fetch CCAD content:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, []);
+
+  // Fallback content if API fails or content is not configured
+  const dummyAboutContent = `The Center for Culture and Arts Development (CCAD) is Bohol's premier institution dedicated to the preservation, promotion, and development of the province's rich cultural heritage. Established as a cornerstone of cultural education and artistic excellence, CCAD serves as the driving force behind Bohol's cultural renaissance.\n\nAs the cultural hub of the province, CCAD works tirelessly to bridge the gap between traditional Boholano culture and contemporary artistic expression. We believe that culture is not just our past, but the foundation for our future development and identity as Boholanos.\n\nThrough innovative programs, community partnerships, and dedicated advocacy, CCAD empowers individuals and communities to embrace their cultural identity while fostering creativity and sustainable development.`;
+
+  let aboutContent = content.about?.content;
+  if (typeof aboutContent !== 'string' || !aboutContent.trim()) {
+    aboutContent = dummyAboutContent;
+  }
+
+  const coreValues = content.coreValues?.content || [
     'Cultural Preservation: Safeguarding Bohol\'s rich cultural heritage for future generations through documentation, conservation, and active promotion.',
     'Community Empowerment: Enabling local communities, artists, and cultural practitioners to take ownership of their cultural identity and development.',
     'Educational Excellence: Providing comprehensive cultural education and training programs that nurture artistic talents and cultural awareness.',
@@ -21,7 +48,7 @@ export default function WhatIsCCADPage() {
     'Inclusivity and Accessibility: Ensuring that cultural programs and opportunities are accessible to all members of Boholano society.'
   ];
 
-  const keyPrograms = [
+  const keyPrograms = content.keyPrograms?.content || [
     'Artistic Development Programs - 7 Forms of Art: Comprehensive training in music, dance, theater, visual arts, literature, film, and architecture.',
     'Cultural Heritage Programs: Documentation, preservation, and promotion of Bohol\'s intangible and tangible cultural heritage.',
     'Creative Industry Development: Supporting local artists and creative entrepreneurs in developing sustainable cultural enterprises.',
@@ -29,7 +56,7 @@ export default function WhatIsCCADPage() {
     'Culture and Governance: Advocating for cultural policies and ensuring cultural considerations in government planning and decision-making.',
   ];
 
-  const achievements = [
+  const achievements = content.achievements?.content || [
     'Successfully established the Bohol Arts and Cultural Heritage (BACH) Council as the province\'s cultural governing body.',
     'Documented and preserved over 50 traditional Boholano cultural practices, songs, and dances.',
     'Trained more than 1,000 local artists and cultural practitioners through various development programs.',
@@ -37,6 +64,33 @@ export default function WhatIsCCADPage() {
     'Developed sustainable cultural tourism initiatives that benefit local communities while preserving cultural integrity.',
     'Created partnerships with national and international cultural organizations to promote Boholano culture globally.'
   ];
+
+  const impactStats = content.impact?.impactStats || {
+    artistsTrained: 1000,
+    culturalSites: 50,
+    communities: 25,
+    yearsOfService: 5,
+  };
+
+  const recognition = content.recognition?.recognition || [
+    'Provincial Cultural Institution of the Year (2023)',
+    'National Heritage Preservation Award (2022)',
+    'Community Development Excellence (2021)',
+  ];
+
+  const lookingForward = content.achievements?.lookingForward || 
+    'As we continue our mission, CCAD remains committed to expanding our reach, deepening our impact, and strengthening the cultural fabric of Bohol. We envision a future where every Boholano is a proud ambassador of our rich cultural heritage.';
+
+  const impactItems = Array.isArray(content.impact?.impactStats)
+    ? content.impact.impactStats
+    : [
+        { title: 'Artists Trained', value: '1000' },
+        { title: 'Cultural Sites', value: '50' },
+        { title: 'Communities', value: '25' },
+        { title: 'Years of Service', value: '5' },
+        { title: 'Strategic Plan', value: '2025' },
+        { title: 'Global Network', value: 'Global' },
+      ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -81,15 +135,13 @@ export default function WhatIsCCADPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl font-bold text-[#382716] mb-6">About CCAD</h2>
-              <p className="text-lg text-[#382716] text-justify leading-relaxed mb-6">
-                The <strong>Center for Culture and Arts Development (CCAD)</strong> is Bohol's premier institution dedicated to the preservation, promotion, and development of the province's rich cultural heritage. Established as a cornerstone of cultural education and artistic excellence, CCAD serves as the driving force behind Bohol's cultural renaissance.
-              </p>
-              <p className="text-lg text-[#382716] text-justify leading-relaxed mb-6">
-                As the cultural hub of the province, CCAD works tirelessly to bridge the gap between traditional Boholano culture and contemporary artistic expression. We believe that culture is not just our past, but the foundation for our future development and identity as Boholanos.
-              </p>
-              <p className="text-lg text-[#382716] text-justify leading-relaxed">
-                Through innovative programs, community partnerships, and dedicated advocacy, CCAD empowers individuals and communities to embrace their cultural identity while fostering creativity and sustainable development.
-              </p>
+              <div className="text-lg text-[#382716] text-justify leading-relaxed space-y-6">
+                {aboutContent.split('\n\n').map((paragraph: string, index: number) => (
+                  <p key={index} className="text-lg text-[#382716] text-justify leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
             </div>
             <div className="flex justify-center">
               <div className="relative">
@@ -123,41 +175,25 @@ export default function WhatIsCCADPage() {
             <div className="space-y-8">
               <div className="bg-white rounded-2xl p-6 shadow-lg">
                 <h3 className="text-2xl font-bold text-[#382716] mb-4">Program Impact</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-[#f3e2bb]/30 rounded-lg">
-                    <div className="text-3xl font-bold text-[#382716]">1000+</div>
-                    <div className="text-sm text-[#382716]/80">Artists Trained</div>
-                  </div>
-                  <div className="text-center p-4 bg-[#f3e2bb]/30 rounded-lg">
-                    <div className="text-3xl font-bold text-[#382716]">50+</div>
-                    <div className="text-sm text-[#382716]/80">Cultural Sites</div>
-                  </div>
-                  <div className="text-center p-4 bg-[#f3e2bb]/30 rounded-lg">
-                    <div className="text-3xl font-bold text-[#382716]">25+</div>
-                    <div className="text-sm text-[#382716]/80">Communities</div>
-                  </div>
-                  <div className="text-center p-4 bg-[#f3e2bb]/30 rounded-lg">
-                    <div className="text-3xl font-bold text-[#382716]">5</div>
-                    <div className="text-sm text-[#382716]/80">Years of Service</div>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {impactItems.map((item: { title: string; value: string }, idx: number) => (
+                    <div key={idx} className="text-center p-4 bg-[#f3e2bb]/30 rounded-lg">
+                      <div className="text-3xl font-bold text-[#382716]">{item.value}</div>
+                      <div className="text-sm text-[#382716]/80">{item.title}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
               
               <div className="bg-white rounded-2xl p-6 shadow-lg">
                 <h3 className="text-2xl font-bold text-[#382716] mb-4">Recognition</h3>
                 <ul className="space-y-2 text-[#382716]">
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#382716] rounded-full mr-3"></span>
-                    Provincial Cultural Institution of the Year (2023)
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#382716] rounded-full mr-3"></span>
-                    National Heritage Preservation Award (2022)
-                  </li>
-                  <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#382716] rounded-full mr-3"></span>
-                    Community Development Excellence (2021)
-                  </li>
+                  {recognition.map((item: string, index: number) => (
+                    <li key={index} className="flex items-center">
+                      <span className="w-2 h-2 bg-[#382716] rounded-full mr-3"></span>
+                      {item}
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -175,7 +211,7 @@ export default function WhatIsCCADPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <div>
               <DropdownSection title="Key Achievements" items={achievements} />
             </div>
@@ -183,27 +219,18 @@ export default function WhatIsCCADPage() {
               <div className="bg-gradient-to-br from-[#382716] to-[#4a2e2a] rounded-2xl p-8 text-white">
                 <h3 className="text-2xl font-bold mb-4">Looking Forward</h3>
                 <p className="text-white/90 leading-relaxed">
-                  As we continue our mission, CCAD remains committed to expanding our reach, deepening our impact, and strengthening the cultural fabric of Bohol. We envision a future where every Boholano is a proud ambassador of our rich cultural heritage.
+                  {lookingForward}
                 </p>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#f3e2bb] rounded-xl p-6 text-center">
-                  <div className="text-2xl font-bold text-[#382716]">2025</div>
-                  <div className="text-sm text-[#382716]/80">Strategic Plan</div>
-                </div>
-                <div className="bg-[#f3e2bb] rounded-xl p-6 text-center">
-                  <div className="text-2xl font-bold text-[#382716]">Global</div>
-                  <div className="text-sm text-[#382716]/80">Cultural Network</div>
-                </div>
-              </div>
+              {/* No separate bottom boxes, all are in impactItems now */}
             </div>
           </div>
         </div>
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-20 bg-gradient-to-br from-[#382716] to-[#4a2e2a] text-white">
+      <section className="py-20 bg-gradient-to-r from-[#382716] to-[#4a2e2a] text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-6">Join Our Cultural Journey</h2>
           <p className="text-xl text-white/90 mb-8 leading-relaxed">
@@ -228,4 +255,4 @@ export default function WhatIsCCADPage() {
       </section>
     </div>
   );
-} 
+}; 
