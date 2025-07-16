@@ -89,15 +89,15 @@ export function Footer() {
         <div className="max-w-[1400px] mx-auto px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-lg text-white tracking-wide">©2025 Center for Culture and Arts Development – Bohol. All rights reserved. Powered by BSCS Intern</p>
           <div className="flex items-center gap-4">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+            <a href="https://facebook.com/ccadboholofficial" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
               <FaFacebookSquare className="text-white text-4xl" />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+            {/* <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">  
               <FaInstagramSquare className="text-white text-4xl" />
             </a>
             <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
               <FaYoutube className="text-white text-5xl" />
-            </a>
+            </a> */}
           </div>
         </div>
       </div>
