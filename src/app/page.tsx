@@ -144,11 +144,8 @@ export default function Home() {
       </Suspense>
 
       {/* Banner Carousel Section */}
-      <div className="relative">
-        <Banner/>
-        {/* Overlay decoration */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
-      </div>
+      {/* Banner Carousel Section */}
+      <Banner />
 
       {/* Vision & Mission Section */}
       <section ref={section2Ref} id="vision-mission" className="py-24 bg-gradient-to-br from-white via-[#faf8f3] to-white animated-section slide-in-right">

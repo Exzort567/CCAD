@@ -89,7 +89,6 @@ export default function Banner() {
     return (
         <div>
             {/* The Banner Section */}
-            {/* THIS IS THE LINE TO CHANGE: Updated to a 3:1 aspect ratio */}
             <section className="relative w-full bg-gray-800 aspect-[3/1] md:aspect-auto md:h-[550px]">
                 <Swiper
                     modules={[Autoplay, Navigation, EffectCoverflow]}
@@ -144,60 +143,36 @@ export default function Banner() {
             {shouldShowThumbnails && (
                 <section className="bg-white w-full py-4">
                     <div className="flex justify-center items-center gap-3 md:gap-4">
-                        {carouselImages.length === 1 ? (
-                            /* Single thumbnail - no navigation needed */
-                            <div className="relative w-32 h-20 md:w-60 md:h-32 transition-all duration-300 ease-in-out transform scale-100 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg">
-                                <Image
-                                    src={carouselImages[0].src}
-                                    alt={carouselImages[0].alt}
-                                    fill
-                                    sizes="33vw"
-                                    className="object-cover rounded-md"
-                                />
-                            </div>
-                        ) : carouselImages.length === 2 ? (
-                            /* Two thumbnails - show both, highlight active */
-                            <>
+                        {carouselImages.length <= 2 ? (
+                            /* Cases for 1 or 2 thumbnails remain the same */
+                            carouselImages.map((thumb, index) => (
                                 <div
-                                    onClick={() => mainSwiper?.slideTo(0)}
-                                    className={`relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform ${
-                                        activeIndex === 0 
+                                    key={index}
+                                    onClick={() => mainSwiper?.slideToLoop(index)}
+                                    className={`relative cursor-pointer transition-all duration-300 ease-in-out transform ${
+                                        carouselImages.length === 1 
+                                        ? 'w-32 h-20 md:w-60 md:h-32 scale-100 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg'
+                                        : `w-28 h-16 md:w-52 md:h-28 ${activeIndex === index 
                                             ? 'scale-110 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg' 
-                                            : 'scale-90 opacity-60 hover:opacity-100 hover:scale-95'
+                                            : 'scale-90 opacity-60 hover:opacity-100 hover:scale-95'}`
                                     }`}
                                 >
                                     <Image
-                                        src={carouselImages[0].src}
-                                        alt={carouselImages[0].alt}
+                                        src={thumb.src}
+                                        alt={thumb.alt}
                                         fill
-                                        sizes="50vw"
+                                        sizes={carouselImages.length === 1 ? "33vw" : "50vw"}
                                         className="object-cover rounded-lg"
                                     />
                                 </div>
-                                <div
-                                    onClick={() => mainSwiper?.slideTo(1)}
-                                    className={`relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform ${
-                                        activeIndex === 1 
-                                            ? 'scale-110 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg' 
-                                            : 'scale-90 opacity-60 hover:opacity-100 hover:scale-95'
-                                    }`}
-                                >
-                                    <Image
-                                        src={carouselImages[1].src}
-                                        alt={carouselImages[1].alt}
-                                        fill
-                                        sizes="50vw"
-                                        className="object-cover rounded-lg"
-                                    />
-                                </div>
-                            </>
+                            ))
                         ) : (
-                            /* Three or more thumbnails - show prev, current, next */
+                            /* MODIFICATION START: Corrected fog effect for 3+ thumbnails */
                             <>
                                 {/* Previous Thumbnail */}
                                 <div
                                     onClick={() => mainSwiper?.slidePrev()}
-                                    className="relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform scale-90 opacity-60 hover:opacity-100 hover:scale-95"
+                                    className="group relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform scale-90 hover:scale-95"
                                 >
                                     <Image
                                         src={visibleThumbnails[0].src}
@@ -206,23 +181,25 @@ export default function Banner() {
                                         sizes="33vw"
                                         className="object-cover rounded-lg"
                                     />
+                                    {/* Corrected Gradient: Fades out by the 70% mark */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-white to-transparent to-[70%] rounded-lg transition-opacity duration-300 group-hover:opacity-0" aria-hidden="true"></div>
                                 </div>
 
-                                {/* Active Thumbnail */}
-                                <div className="relative w-32 h-20 md:w-60 md:h-32 transition-all duration-300 ease-in-out transform scale-100 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg">
+                                {/* Active Thumbnail (No Overlay) */}
+                                <div className="relative w-32 h-20 md:w-60 md:h-32 transition-all duration-300 ease-in-out transform scale-110 opacity-100 border-4 border-yellow-500 rounded-lg shadow-lg">
                                     <Image
                                         src={visibleThumbnails[1].src}
                                         alt={visibleThumbnails[1].alt}
                                         fill
                                         sizes="33vw"
-                                        className="object-cover rounded-md"
+                                        className="object-cover rounded-lg"
                                     />
                                 </div>
 
                                 {/* Next Thumbnail */}
                                 <div
                                     onClick={() => mainSwiper?.slideNext()}
-                                    className="relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform scale-90 opacity-60 hover:opacity-100 hover:scale-95"
+                                    className="group relative w-28 h-16 md:w-52 md:h-28 cursor-pointer transition-all duration-300 ease-in-out transform scale-90 hover:scale-95"
                                 >
                                     <Image
                                         src={visibleThumbnails[2].src}
@@ -231,8 +208,11 @@ export default function Banner() {
                                         sizes="33vw"
                                         className="object-cover rounded-lg"
                                     />
+                                    {/* Corrected Gradient: Fades out by the 70% mark */}
+                                    <div className="absolute inset-0 bg-gradient-to-l from-white to-transparent to-[70%] rounded-lg transition-opacity duration-300 group-hover:opacity-0" aria-hidden="true"></div>
                                 </div>
                             </>
+                            /* MODIFICATION END */
                         )}
                     </div>
                 </section>
