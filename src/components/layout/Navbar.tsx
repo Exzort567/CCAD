@@ -9,7 +9,6 @@ const programLinks = [
   { label: 'Artistic Development Programs - 7 Forms of Art', href: '/artistic-development' },
   { label: 'Culture and Development Programs', href: '/development-programs' },
   { label: 'Cultural Heritage Programs', href: '/heritage-programs' },
-  { label: 'Creative Industry', href: '/creative-industry' },
   { label: 'Culture and Governance', href: '/culture-governance' },
 ];
 
@@ -231,7 +230,27 @@ export function Navbar() {
                 priority
               />
             </div>
-            <Link href="/creative-industry" className="text-white text-lg font-semibold py-2 w-full text-center hover:bg-[#4a2e2a]" onClick={() => setMobileOpen(false)}>Creative Industry</Link>
+            {/* About Us Dropdown for Mobile */}
+            <div className="w-full flex flex-col items-start">
+              <div className="flex items-center text-white text-lg font-semibold py-2 w-full pl-6">
+                <span>About Us</span>
+                <span className="ml-2 block lg:hidden" />
+              </div>
+              <div className="w-full">
+                <div className="bg-white rounded-lg shadow-md ml-3 mt-1 mb-3 py-2 w-[calc(100%-1.5rem)]">
+                  {aboutUsLinks.map((item) => (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      className="block text-[#382716] text-base py-2 pl-6 pr-4 text-left hover:bg-[#f3e2bb] rounded"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
             <Link href="/bach-council" className="text-white text-lg font-semibold py-2 w-full text-center hover:bg-[#4a2e2a]" onClick={() => setMobileOpen(false)}>Bach Council</Link>
           </div>
         )}

@@ -60,8 +60,8 @@ export default function BachCouncilPage() {
       .sort((a, b) => (a.order || 0) - (b.order || 0))
       .map(member => (
         <div key={member._id} className="text-center">
-          <h4 className="font-bold text-xs text-gray-900 leading-tight">{member.name}</h4>
-          <p className="text-xs text-gray-700 mt-1">{member.position}</p>
+          <h4 className="font-bold text-xs sm:text-sm md:text-base text-gray-900 leading-tight">{member.name}</h4>
+          <p className="text-xs sm:text-sm text-gray-700 mt-1">{member.position}</p>
         </div>
       ));
   };
@@ -76,19 +76,19 @@ export default function BachCouncilPage() {
 
     return (
         <>
-            <div className="grid grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4">
                 {topRow.map(member => (
-                    <div key={member._id} className="text-center">
-                        <h4 className="font-bold text-xs text-gray-900 leading-tight">{member.name}</h4>
-                        <p className="text-xs text-gray-700 mt-1">{member.position}</p>
+                    <div key={member._id} className="text-center p-2">
+                        <h4 className="font-bold text-xs sm:text-sm text-gray-900 leading-tight">{member.name}</h4>
+                        <p className="text-xs sm:text-sm text-gray-700 mt-1">{member.position}</p>
                     </div>
                 ))}
             </div>
-            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-sm mx-auto">
                 {bottomRow.map(member => (
-                    <div key={member._id} className="text-center">
-                        <h4 className="font-bold text-xs text-gray-900 leading-tight">{member.name}</h4>
-                        <p className="text-xs text-gray-700 mt-1">{member.position}</p>
+                    <div key={member._id} className="text-center p-2">
+                        <h4 className="font-bold text-xs sm:text-sm text-gray-900 leading-tight">{member.name}</h4>
+                        <p className="text-xs sm:text-sm text-gray-700 mt-1">{member.position}</p>
                     </div>
                 ))}
             </div>
@@ -112,10 +112,10 @@ export default function BachCouncilPage() {
 
         return (
             <div key={head._id} className="flex flex-col items-center">
-                <div className="bg-gray-100 border-2 border-gray-400 rounded-xl p-2 text-center w-full">
-                    <p className="text-xs text-gray-700 mb-1">Section Head</p>
-                    <h5 className="font-bold text-xs text-gray-900">{head.name}</h5>
-                    <p className="text-xs text-gray-700">{head.position}</p>
+                <div className="bg-gray-100 border-2 border-gray-400 rounded-xl p-3 sm:p-4 text-center w-full">
+                    <p className="text-xs sm:text-sm text-gray-700 mb-1">Section Head</p>
+                    <h5 className="font-bold text-xs sm:text-sm text-gray-900">{head.name}</h5>
+                    <p className="text-xs sm:text-sm text-gray-700">{head.position}</p>
                 </div>
 
                 <div className="w-0.5 h-4 bg-gray-800"></div>
@@ -123,10 +123,10 @@ export default function BachCouncilPage() {
                 <div className="bg-gray-100 border-2 border-gray-400 rounded-xl w-full overflow-hidden transition-all duration-300 ease-in-out">
                     {/* Header with toggle button */}
                     <div 
-                        className="p-2 cursor-pointer hover:bg-gray-200 transition-colors duration-200 flex items-center justify-between"
+                        className="p-3 sm:p-4 cursor-pointer hover:bg-gray-200 transition-colors duration-200 flex items-center justify-between"
                         onClick={() => toggleSection(sectionName)}
                     >
-                        <p className="text-xs font-bold text-gray-900">Committee Heads & Members:</p>
+                        <p className="text-xs sm:text-sm font-bold text-gray-900">Committee Heads & Members:</p>
                         <div className={`transition-transform duration-300 ease-in-out ${isExpanded ? 'rotate-180' : 'rotate-0'}`}>
                             <svg 
                                 width="16" 
@@ -155,7 +155,7 @@ export default function BachCouncilPage() {
                                 : 'max-h-0 opacity-0'
                         }`}
                     >
-                        <div className="px-2 pb-2 space-y-1 text-xs">
+                        <div className="px-3 sm:px-4 pb-3 sm:pb-4 space-y-2 text-xs sm:text-sm">
                             {committeeMembers.map((cm, index) => (
                                 <div 
                                     key={cm._id}
@@ -181,75 +181,81 @@ export default function BachCouncilPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-4">
-      <div className="max-w-6xl mx-auto px-4">
+    <div className="min-h-screen bg-white py-4 sm:py-6 md:py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Artistic BACH Logo and Title */}
-        <div className="mt-6 max-w-xs mx-auto">
+        <div className="mt-4 sm:mt-6 max-w-[200px] sm:max-w-[250px] md:max-w-xs mx-auto">
             <Image
               src="/images/bach.png"
               alt="BACH Logo"
               width={400}
               height={200}
+              className="w-full h-auto"
             />
         </div>
 
         {/* Organizational Structure Title */}
-        <div className="flex justify-center items-center my-4">
+        <div className="flex justify-center items-center my-4 sm:my-6 md:my-8">
           <Image
             src="/images/structure.png"
             alt="Structure logo"
             width={25}
             height={25}
+            className="w-5 h-5 sm:w-6 sm:h-6"
           />
-          <h1 className="text-center text-1xl font-semibold mx-4">ORGANIZATIONAL STRUCTURE</h1>
+          <h1 className="text-center text-sm sm:text-base md:text-xl font-semibold mx-2 sm:mx-4">ORGANIZATIONAL STRUCTURE</h1>
           <Image
             src="/images/structure.png"
             alt="Structure logo"
             width={25}
             height={25}
+            className="w-5 h-5 sm:w-6 sm:h-6"
           />
         </div>
 
         {/* Honorary Chairperson */}
         <div className="flex flex-col items-center">
           {renderMembersByCategory('Honorary Chairperson').map((member, index) => (
-            <div key={index} className="bg-gray-100 border-2 border-gray-400 rounded-xl p-3 w-80">
-                <div className="bg-white border-2 border-gray-500 rounded-lg p-2 mb-1 text-center">
+            <div key={index} className="bg-gray-100 border-2 border-gray-400 rounded-xl p-3 sm:p-4 w-full max-w-[280px] sm:max-w-xs">
+                <div className="bg-white border-2 border-gray-500 rounded-lg p-2 sm:p-3 mb-1 text-center">
                     {member}
                 </div>
             </div>
           ))}
 
-          <div className="w-0.5 h-6 bg-gray-800"></div>
+          <div className="w-0.5 h-4 sm:h-6 bg-gray-800"></div>
 
           {/* Executive Board */}
-          <div className="bg-gray-100 border-2 border-gray-400 rounded-xl p-4 w-full max-w-3xl">
-            <div className="mb-4 text-center">
-              <h3 className="text-md font-bold text-gray-900 font-inknut-antiqua">EXECUTIVE BOARD</h3>
+          <div className="bg-gray-100 border-2 border-gray-400 rounded-xl p-3 sm:p-4 md:p-6 w-full max-w-3xl">
+            <div className="mb-3 sm:mb-4 text-center">
+              <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 font-inknut-antiqua">EXECUTIVE BOARD</h3>
             </div>
             {renderExecutiveBoard()}
           </div>
           
-          <div className="w-0.5 h-6 bg-gray-800"></div>
+          <div className="w-0.5 h-4 sm:h-6 bg-gray-800"></div>
 
-          <div className="h-0.5 w-[61.2%] bg-gray-800"></div>
+          {/* Horizontal line - responsive width */}
+          <div className="h-0.5 w-[52.4%] sm:w-[75%] md:w-[63.6%] bg-gray-800"></div>
 
            <div className="relative w-full max-w-4xl">
-              <div className="grid grid-cols-4 gap-4 mb-0">
-                <div className="flex justify-center"><div className="w-0.5 h-6 bg-gray-800"></div></div>
-                <div className="flex justify-center"><div className="w-0.5 h-6 bg-gray-800"></div></div>
-                <div className="flex justify-center"><div className="w-0.5 h-6 bg-gray-800"></div></div>
-                <div className="flex justify-center"><div className="w-0.5 h-6 bg-gray-800"></div></div>
+              {/* Vertical lines - responsive spacing */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-0">
+                <div className="flex justify-center"><div className="w-0.5 h-4 sm:h-6 bg-gray-800"></div></div>
+                <div className="flex justify-center"><div className="w-0.5 h-4 sm:h-6 bg-gray-800"></div></div>
+                <div className="hidden sm:flex justify-center"><div className="w-0.5 h-4 sm:h-6 bg-gray-800"></div></div>
+                <div className="hidden sm:flex justify-center"><div className="w-0.5 h-4 sm:h-6 bg-gray-800"></div></div>
               </div>
-              <div className="grid grid-cols-4 gap-4">
+              {/* Section heads - responsive grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {renderSectionHeads()}
               </div>
             </div>
         </div>
 
         {/* Spacer */}
-        <div className="my-12" />
+        <div className="my-8 sm:my-10 md:my-12" />
 
         {/* Image and BACH Logo */}
         <div className="flex flex-col items-center justify-center text-center px-4">
@@ -257,19 +263,19 @@ export default function BachCouncilPage() {
         </div>
         
         {/* Spacer */}
-        <div className="my-12" />
+        <div className="my-8 sm:my-10 md:my-12" />
         
-        <section ref={sectionRef} className="flex justify-center bg-white py-12 w-full animated-section slide-in-left">
-          <div className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center">
-            <div className="w-full flex flex-col md:flex-row justify-center items-stretch gap-12 md:gap-10">
+        <section ref={sectionRef} className="flex justify-center bg-white py-8 sm:py-10 md:py-12 w-full animated-section slide-in-left">
+          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+            <div className="w-full flex flex-col lg:flex-row justify-center items-stretch gap-8 md:gap-10">
           
               {/* Objectives with Dropdown */}
-              <div className="flex-1 flex flex-col items-center md:items-start w-full max-w-md mx-auto">
+              <div className="flex-1 flex flex-col items-center lg:items-start w-full max-w-md mx-auto lg:mx-0">
                 <DropdownSection title="Objectives" items={objectives} />
               </div>
 
               {/* Duties and Functions with Dropdown */}
-              <div className="flex-1 flex flex-col items-center md:items-start w-full max-w-md mx-auto">
+              <div className="flex-1 flex flex-col items-center lg:items-start w-full max-w-md mx-auto lg:mx-0">
                 <DropdownSection title="Duties and Functions" items={duties} />
               </div>
             </div>
@@ -279,7 +285,7 @@ export default function BachCouncilPage() {
         <FlippingBook />
 
         {/* Spacer at the bottom of the page */}
-        <div className="my-12" />
+        <div className="my-8 sm:my-10 md:my-12" />
 
       </div>
     </div>
