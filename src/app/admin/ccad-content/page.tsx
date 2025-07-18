@@ -53,7 +53,7 @@ const AdminCCADContentPage = () => {
               { title: 'Global Network', value: 'Global' },
             ]
       );
-      setRecognition(data.recognition?.recognition || []);
+      setRecognition(data.impact?.recognition || []);
       setAchievements(data.achievements?.content || []);
       setLookingForward(data.achievements?.lookingForward || '');
       // Remove these from achievements, now in impact
@@ -283,7 +283,7 @@ const AdminCCADContentPage = () => {
           </div>
 
           <button
-            onClick={() => handleSave('impact', { impactStats: impactItems })}
+            onClick={() => handleSave('impact', { impactStats: impactItems, recognition })}
             disabled={saving === 'impact'}
             className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition-colors flex items-center gap-2 disabled:opacity-50"
           >

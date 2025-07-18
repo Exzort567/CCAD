@@ -72,7 +72,7 @@ export default function WhatIsCCADPage() {
     yearsOfService: 5,
   };
 
-  const recognition = content.recognition?.recognition || [
+  const recognition = content.impact?.recognition || [
     'Provincial Cultural Institution of the Year (2023)',
     'National Heritage Preservation Award (2022)',
     'Community Development Excellence (2021)',
